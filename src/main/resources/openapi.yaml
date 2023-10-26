@@ -1,0 +1,1008 @@
+openapi: 3.0.3
+info:
+  description: "Описание спецификации всех API методов, используемых в online diffusion\
+    \ сервисе"
+  title: Online diffusion API
+  version: 0.0.1
+  x-logo:
+    url: https://i.imgur.com/1kUh580.jpg
+externalDocs:
+  description: Описание спецификации в документации проекта
+  url: https://online-diffusion.youtrack.cloud/articles/OD-A-4/API-Specification
+servers:
+- description: "Локальный сервер, актуально для запуска на своем компьютере"
+  url: http://localhost:8080
+  x-last-modified: 1698183338768
+security:
+- JWTAuth: []
+tags:
+- description: "Методы, связанные с авторизацией"
+  externalDocs:
+    description: ""
+    url: ""
+  name: Auth
+- description: "Методы, связанные с работой с уже созданными изображениями"
+  externalDocs:
+    description: ""
+    url: ""
+  name: Images
+- description: "Методы, связанные с генерацией изображений"
+  externalDocs:
+    description: ""
+    url: ""
+  name: Generator
+- description: "Методы, связанные с получением пользовательских данных"
+  externalDocs:
+    description: ""
+    url: ""
+  name: User
+paths:
+  /api/v1/auth/login:
+    get:
+      description: ""
+      operationId: login
+      parameters:
+      - description: Почта пользователя
+        explode: true
+        in: query
+        name: email
+        required: true
+        schema:
+          example: foo@gmail.com
+          format: email
+          type: string
+        style: form
+      - description: Пароль пользователя
+        explode: true
+        in: query
+        name: password
+        required: true
+        schema:
+          example: querty123
+          maxLength: 32
+          minLength: 8
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthInfo'
+          description: "все хорошо, авторизация прошла успешно"
+        "400":
+          description: логин или пароль неверные
+      summary: Авторизация
+      tags:
+      - Auth
+      x-accepts: application/json
+      x-tags:
+      - tag: Auth
+  /api/v1/auth/refresh-token:
+    put:
+      description: ""
+      operationId: refresh-token
+      parameters:
+      - description: "Токен, используемый для обновления авторизации, когда accessToken\
+          \ кончился"
+        explode: true
+        in: query
+        name: refreshToken
+        required: true
+        schema:
+          example: "1234"
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthInfo'
+          description: "все хорошо, регистрация прошла успешно, юзер должен подтвердить почту"
+        "404":
+          description: рефреш токен истек или невалиден
+      summary: Обновление токена авторизации
+      tags:
+      - Auth
+      x-accepts: application/json
+      x-tags:
+      - tag: Auth
+  /api/v1/auth/register:
+    post:
+      description: ""
+      operationId: register
+      parameters:
+      - description: Почта пользователя
+        explode: true
+        in: query
+        name: email
+        required: true
+        schema:
+          example: foo@gmail.com
+          format: email
+          type: string
+        style: form
+      - description: Имя пользователя
+        explode: true
+        in: query
+        name: username
+        required: true
+        schema:
+          example: user
+          maxLength: 32
+          minLength: 4
+          type: string
+        style: form
+      - description: Пароль пользователя
+        explode: true
+        in: query
+        name: password
+        required: true
+        schema:
+          example: querty123
+          maxLength: 32
+          minLength: 8
+          type: string
+        style: form
+      responses:
+        "200":
+          description: "все хорошо, регистрация прошла успешно, юзер должен подтве\
+            рдить почту"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidData'
+          description: "регистрация невозможна, так как какие-то из полей были нек\
+            оректными"
+        "409":
+          description: "регистрация невозможна, так как некоторые поля удовлетворя\
+            ют требованиям уникальности"
+      summary: Регистрация на портале
+      tags:
+      - Auth
+      x-accepts: application/json
+      x-tags:
+      - tag: Auth
+  /api/v1/auth/recovery:
+    post:
+      description: ""
+      operationId: recovery
+      parameters:
+      - description: Почта пользователя
+        explode: true
+        in: query
+        name: email
+        required: true
+        schema:
+          example: foo@gmail.com
+          format: email
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recoveryToken'
+          description: "почта принята, код отправлен, если почта есть в базе"
+        "400":
+          description: "неккоректные данные, которые точно не являются почтовым ад\
+            ресом"
+      summary: Получение кода для восстановления на почту
+      tags:
+      - Auth
+      x-accepts: application/json
+      x-tags:
+      - tag: Auth
+  /api/v1/auth/confirmation:
+    put:
+      description: ""
+      operationId: confirmation
+      parameters:
+      - description: Код для сброса пароля с электронной почты
+        explode: true
+        in: query
+        name: code
+        required: true
+        schema:
+          example: 123456
+          format: int32
+          type: integer
+        style: form
+      - description: "Токен, назначаемый сессии сброса пароля"
+        explode: true
+        in: query
+        name: recoveryToken
+        required: true
+        schema:
+          example: querty123
+          type: string
+        style: form
+      responses:
+        "200":
+          content: {}
+          description: "код правильный и соответсвует введеному recovery_token, мо\
+            жно присылать новый пароль через метод Confirm_new_Password"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/numOfTriesLeft'
+          description: "присылается, когда такой recovery_token есть и он валидный\
+            , однако код был введен неверно"
+        "404":
+          description: такого recovery_token нет на сервере в принципе
+      summary: Подтверждение правильности кода
+      tags:
+      - Auth
+      x-accepts: application/json
+      x-tags:
+      - tag: Auth
+  /api/v1/auth/new-password:
+    put:
+      description: ""
+      operationId: new-password
+      parameters:
+      - description: Код для сброса пароля с электронной почты
+        explode: true
+        in: query
+        name: code
+        required: true
+        schema:
+          example: 123456
+          format: int32
+          type: integer
+        style: form
+      - description: "Токен, назначаемый сессии сброса пароля"
+        explode: true
+        in: query
+        name: recoveryToken
+        required: true
+        schema:
+          example: querty123
+          type: string
+        style: form
+      responses:
+        "200":
+          content: {}
+          description: токен активирован и новый пароль успешно принят
+        "400":
+          description: "такой токен есть, однако он еще не был активирован присыла\
+            нием правильного кода в методе Confirm_Password_Code"
+        "404":
+          description: такого recovery_token нет на сервере в принципе
+      summary: Ввод нового пароля
+      tags:
+      - Auth
+      x-accepts: application/json
+      x-tags:
+      - tag: Auth
+  /api/v1/feed:
+    get:
+      description: ""
+      operationId: feed
+      parameters:
+      - description: "Маркер, показывающий начиная с какого id подгружать ресурсы"
+        explode: true
+        in: query
+        name: marker
+        required: false
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostPagingWrapper'
+          description: "все хорошо, присланы посты"
+        "404":
+          description: такой маркер не найден
+      security:
+      - JWTAuth: []
+      summary: Получение списка постов
+      tags:
+      - Images
+      x-accepts: application/json
+      x-tags:
+      - tag: Images
+  /api/v1/images/{photoId}:
+    get:
+      description: ""
+      operationId: get-image
+      parameters:
+      - description: ID фото в базе данных
+        explode: false
+        in: path
+        name: photoId
+        required: true
+        schema:
+          example: 123456
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+          description: токен активирован и новый пароль успешно принят
+        "400":
+          description: "такой токен есть, однако он еще не был активирован присыла\
+            нием правильного кода в методе Confirm_Password_Code"
+        "404":
+          description: такого recovery_token нет на сервере в принципе
+      security:
+      - JWTAuth: []
+      summary: Получение полной информации про картинку
+      tags:
+      - Images
+      x-accepts: application/json
+      x-tags:
+      - tag: Images
+    post:
+      description: ""
+      operationId: post-image
+      parameters:
+      - description: ID фото в базе данных
+        explode: false
+        in: path
+        name: photoId
+        required: true
+        schema:
+          example: 123456
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "201":
+          description: изображение было успешно опубликовано
+        "400":
+          description: такого photo_id нет на сервере в принципе
+        "404":
+          description: "данное photo_id не может быть опубликовано пользователем,\
+            \ так как это не его фотография или эта фотография уже была опубликова\
+            на"
+      security:
+      - JWTAuth: []
+      summary: Публикуем изображение
+      tags:
+      - Images
+      x-accepts: application/json
+      x-tags:
+      - tag: Images
+    put:
+      description: ""
+      operationId: put-image
+      parameters:
+      - description: ID фото в базе данных
+        explode: false
+        in: path
+        name: photoId
+        required: true
+        schema:
+          example: 123456
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: изображение было успешно сохранено в галерею
+        "404":
+          description: такого photo_id нет на сервере в принципе
+        "409":
+          description: "данное photo_id не может быть добавлено в галерею пользова\
+            телем, так как это не его фотография или эта фотография уже есть у нег\
+            о в галерее"
+      security:
+      - JWTAuth: []
+      summary: Сохраняем в галерею
+      tags:
+      - Images
+      x-accepts: application/json
+      x-tags:
+      - tag: Images
+  /api/v1/images/make-avatar:
+    put:
+      description: ""
+      operationId: make-avatar
+      parameters:
+      - description: ID фото в базе данных
+        explode: true
+        in: query
+        name: targetPhotoId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: form
+      responses:
+        "200":
+          content: {}
+          description: изображение было успешно поставлено на автарку
+        "404":
+          description: такого photo_id нет на сервере в принципе
+      security:
+      - JWTAuth: []
+      summary: Ставим изображение пользователю на аватарку
+      tags:
+      - Images
+      x-accepts: application/json
+      x-tags:
+      - tag: Images
+  /api/v1/generator:
+    get:
+      description: ""
+      operationId: get-generator
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models'
+          description: все хорошо присылаются модели
+      security:
+      - JWTAuth: []
+      summary: Получаем список моделей для генератора
+      tags:
+      - Generator
+      x-accepts: application/json
+      x-tags:
+      - tag: Generator
+    post:
+      description: ""
+      operationId: post-generator
+      parameters:
+      - description: prompt для создания фото
+        explode: true
+        in: query
+        name: prompt
+        required: true
+        schema:
+          example: cool looking panda
+          type: string
+        style: form
+      - description: anti-prompt для создания фото
+        explode: true
+        in: query
+        name: anti-prompt
+        required: true
+        schema:
+          example: ugly face
+          type: string
+        style: form
+      - description: Seed для генерации нейросети. Оставить пустым для случайного
+        explode: true
+        in: query
+        name: seed
+        required: false
+        schema:
+          example: 123456
+          format: int64
+          type: integer
+        style: form
+      - description: "Название модели, которая будет использоваться для генерации"
+        explode: true
+        in: query
+        name: modelName
+        required: true
+        schema:
+          example: anime-diffusion
+          type: string
+        style: form
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/generationToken'
+          description: отправлено на генерацию
+        "400":
+          description: "если не заполнены prompt, anti-prompt или model_name"
+      security:
+      - JWTAuth: []
+      summary: Начинаем генерацию изображения
+      tags:
+      - Generator
+      x-accepts: application/json
+      x-tags:
+      - tag: Generator
+    trace:
+      description: ""
+      operationId: trace-generator
+      parameters:
+      - description: "Токен, по которому можно узнать об статусе генерируемого изо\
+          бражения"
+        explode: true
+        in: query
+        name: generationToken
+        required: true
+        schema:
+          example: "123"
+          type: string
+        style: form
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+          description: нейронная сеть успешно сгенерировала изображение и в присланном
+            Image будет ссылка на него
+        "202":
+          description: "генерация изображения продолжается и еще не была завершена\
+            , но и не сломалась"
+        "404":
+          description: такого generation_token нет на сервере в принципе
+        "500":
+          description: во время генерации изображения случилась ошибка и оно было
+            потеряно безвозвратно :(
+      security:
+      - JWTAuth: []
+      summary: Получаем сделанное изображение в цикле
+      tags:
+      - Generator
+      x-accepts: application/json
+      x-tags:
+      - tag: Generator
+  /api/v1/profile:
+    get:
+      description: ""
+      operationId: get-profile
+      parameters: []
+      responses:
+        "200":
+          content: {}
+          description: "все хорошо, информация по юзеру получена"
+      security:
+      - JWTAuth: []
+      summary: Получаем инфо из профиля
+      tags:
+      - User
+      x-accepts: application/json
+      x-tags:
+      - tag: User
+  /api/v1/profile/username:
+    put:
+      description: ""
+      operationId: profile-username
+      parameters:
+      - description: Имя пользователя
+        explode: true
+        in: query
+        name: username
+        required: true
+        schema:
+          example: user
+          maxLength: 32
+          minLength: 4
+          type: string
+        style: form
+      responses:
+        "200":
+          content: {}
+          description: "все хорошо, имя пользователя было успешно изменено"
+        "400":
+          description: "изменение имени пользователя на данное имя невозможно, так\
+            \ как не удовлетворяет требованиям к уникальности"
+      security:
+      - JWTAuth: []
+      summary: Меняем имя юзеру
+      tags:
+      - User
+      x-accepts: application/json
+      x-tags:
+      - tag: User
+  /api/v1/profile/password:
+    put:
+      description: ""
+      operationId: profile-password
+      parameters:
+      - description: Пароль пользователя
+        explode: true
+        in: query
+        name: password
+        required: true
+        schema:
+          example: querty123
+          maxLength: 32
+          minLength: 8
+          type: string
+        style: form
+      responses:
+        "200":
+          content: {}
+          description: "все хорошо, пароль был успешно изменен"
+      security:
+      - JWTAuth: []
+      summary: Меняем пароль юзеру
+      tags:
+      - User
+      x-accepts: application/json
+      x-tags:
+      - tag: User
+  /api/v1/profile/gallery:
+    get:
+      description: ""
+      operationId: profile-gallery
+      parameters:
+      - description: "Маркер, показывающий начиная с какого id подгружать ресурсы"
+        explode: true
+        in: query
+        name: marker
+        required: false
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GalleryPagingWrapper'
+          description: "все хорошо, присланы изображения галереи"
+        "404":
+          description: такой маркер не найден
+      security:
+      - JWTAuth: []
+      summary: Получить галерею
+      tags:
+      - User
+      x-accepts: application/json
+      x-tags:
+      - tag: User
+      - tag: Images
+components:
+  headers: {}
+  parameters:
+    email:
+      description: Почта пользователя
+      explode: true
+      in: query
+      name: email
+      required: true
+      schema:
+        example: foo@gmail.com
+        format: email
+        type: string
+      style: form
+    password:
+      description: Пароль пользователя
+      explode: true
+      in: query
+      name: password
+      required: true
+      schema:
+        example: querty123
+        maxLength: 32
+        minLength: 8
+        type: string
+      style: form
+    username:
+      description: Имя пользователя
+      explode: true
+      in: query
+      name: username
+      required: true
+      schema:
+        example: user
+        maxLength: 32
+        minLength: 4
+        type: string
+      style: form
+    refreshToken:
+      description: "Токен, используемый для обновления авторизации, когда accessToken\
+        \ кончился"
+      explode: true
+      in: query
+      name: refreshToken
+      required: true
+      schema:
+        example: "1234"
+        type: string
+      style: form
+    recoveryToken:
+      description: "Токен, назначаемый сессии сброса пароля"
+      explode: true
+      in: query
+      name: recoveryToken
+      required: true
+      schema:
+        example: querty123
+        type: string
+      style: form
+    code:
+      description: Код для сброса пароля с электронной почты
+      explode: true
+      in: query
+      name: code
+      required: true
+      schema:
+        example: 123456
+        format: int32
+        type: integer
+      style: form
+    marker:
+      description: "Маркер, показывающий начиная с какого id подгружать ресурсы"
+      explode: true
+      in: query
+      name: marker
+      required: false
+      schema:
+        example: 1
+        format: int64
+        type: integer
+      style: form
+    photoId:
+      description: ID фото в базе данных
+      explode: false
+      in: path
+      name: photoId
+      required: true
+      schema:
+        example: 123456
+        format: int64
+        type: integer
+      style: simple
+    prompt:
+      description: prompt для создания фото
+      explode: true
+      in: query
+      name: prompt
+      required: true
+      schema:
+        example: cool looking panda
+        type: string
+      style: form
+    anti-prompt:
+      description: anti-prompt для создания фото
+      explode: true
+      in: query
+      name: anti-prompt
+      required: true
+      schema:
+        example: ugly face
+        type: string
+      style: form
+    seed:
+      description: Seed для генерации нейросети. Оставить пустым для случайного
+      explode: true
+      in: query
+      name: seed
+      required: false
+      schema:
+        example: 123456
+        format: int64
+        type: integer
+      style: form
+    modelName:
+      description: "Название модели, которая будет использоваться для генерации"
+      explode: true
+      in: query
+      name: modelName
+      required: true
+      schema:
+        example: anime-diffusion
+        type: string
+      style: form
+    imageUrl:
+      description: Url полученного изображения
+      explode: true
+      in: query
+      name: imageUrl
+      required: true
+      schema:
+        example: https://i.imgur.com/douh7U1.gif
+        type: string
+      style: form
+    generationToken:
+      description: "Токен, по которому можно узнать об статусе генерируемого изобр\
+        ажения"
+      explode: true
+      in: query
+      name: generationToken
+      required: true
+      schema:
+        example: "123"
+        type: string
+      style: form
+    targetPhotoId:
+      description: ID фото в базе данных
+      explode: true
+      in: query
+      name: targetPhotoId
+      required: true
+      schema:
+        format: int64
+        type: integer
+      style: form
+  responses: {}
+  schemas:
+    PostPagingWrapper:
+      description: Оболочка для пагинации
+      example:
+        nextMarker: 0.8008281904610115
+        posts:
+        - null
+        - null
+      properties:
+        nextMarker:
+          description: Маркер для следующего запроса
+          type: number
+        posts:
+          description: Список присланных постов в нужном порядке
+          items:
+            $ref: '#/components/schemas/Post'
+          type: array
+      type: object
+    GalleryPagingWrapper:
+      description: Оболочка для пагинации
+      example:
+        nextMarker: 0.8008281904610115
+        images:
+        - seed: seed
+          authorName: authorName
+          authorAvatarUrl: authorAvatarUrl
+          photoId: 0.8008281904610115
+          anti-prompt: anti-prompt
+          model: model
+          prompt: prompt
+        - seed: seed
+          authorName: authorName
+          authorAvatarUrl: authorAvatarUrl
+          photoId: 0.8008281904610115
+          anti-prompt: anti-prompt
+          model: model
+          prompt: prompt
+      properties:
+        nextMarker:
+          description: Маркер для следующего запроса
+          type: number
+        images:
+          description: Список присланных изображений в нужном порядке
+          items:
+            $ref: '#/components/schemas/Image'
+          type: array
+      type: object
+    Post:
+      description: Пост в ленте с изображением
+      oneOf:
+      - $ref: '#/components/schemas/Image'
+      x-one-of-name: Post
+    accessToken:
+      description: Токен авторизации
+      type: string
+    refreshToken:
+      description: "Токен, используемый для обновления авторизации, когда accessToken\
+        \ кончился"
+      type: string
+    invalidData:
+      description: показывает какие именно поля были некорректными
+      enum:
+      - email
+      - username
+      - password
+      type: string
+    recoveryToken:
+      description: "Токен, назначаемый сессии сброса пароля"
+      type: string
+    numOfTriesLeft:
+      description: приходит в случае ввода неправильного кода для токена. Указывает
+        сколько попыток еще осталось
+      format: int32
+      type: integer
+    Image:
+      description: Объект с информацией об фотографии
+      example:
+        seed: seed
+        authorName: authorName
+        authorAvatarUrl: authorAvatarUrl
+        photoId: 0.8008281904610115
+        anti-prompt: anti-prompt
+        model: model
+        prompt: prompt
+      properties:
+        photoId:
+          description: Id фотографии
+          type: number
+        authorName:
+          description: Имя автора
+          type: string
+        authorAvatarUrl:
+          description: URL аватара автора
+          type: string
+        prompt:
+          description: prompt использовшийся для создания изображения
+          type: string
+        anti-prompt:
+          description: anti-prompt использовшийся для создания изображения
+          type: string
+        seed:
+          description: "seed, использовшийся для создания изображения"
+          type: string
+        model:
+          description: "Модель, использувшееся для создания изображения"
+          type: string
+      required:
+      - anti-prompt
+      - authorAvatarUrl
+      - authorName
+      - model
+      - photoId
+      - prompt
+      - seed
+      type: object
+    generationToken:
+      description: "Токен, назначаемый сессии генерации изображения"
+      type: string
+    models:
+      description: "Все модели, которые можно использовать для генерации"
+      items:
+        description: Модель для генерации
+        type: string
+      type: array
+    ProfileInfo:
+      description: Информация по юзеру
+      properties:
+        username:
+          description: Имя пользователя
+          type: string
+        email:
+          description: Адрес почты
+          type: string
+        avatarUrl:
+          description: Ссылка на аватар
+          type: string
+        generated:
+          description: Количество сгенерированных фото
+          format: int64
+          type: integer
+        gallery_images:
+          description: Количество фото в галерее
+          format: int64
+          type: integer
+        posted:
+          description: Количество сделаных постов
+          format: int64
+          type: integer
+      required:
+      - avatarUrl
+      - email
+      - gallery_images
+      - generated
+      - posted
+      - username
+      type: object
+    AuthInfo:
+      description: "Ответная информация, содержащая JWT токены пользователя"
+      example:
+        accessToken: accessToken
+        refreshToken: refreshToken
+      properties:
+        refreshToken:
+          description: "Токен, используемый для обновления авторизации, когда accessToken\
+            \ кончился"
+          type: string
+        accessToken:
+          description: JWT токен авторизированного пользователя
+          type: string
+      required:
+      - accessToken
+      - refreshToken
+      type: object
+  securitySchemes:
+    JWTAuth:
+      bearerFormat: JWT
+      description: "Example: \n> Authorization: Bearer <token>"
+      scheme: bearer
+      type: http
+      x-last-modified: 1698183246392
