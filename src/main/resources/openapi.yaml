@@ -303,6 +303,8 @@ paths:
           description: "все хорошо, присланы посты"
         "404":
           description: такой маркер не найден
+        401:
+          $ref: '#/components/responses/401'
       security:
       - JWTAuth: []
       summary: Получение списка постов
@@ -338,6 +340,8 @@ paths:
             нием правильного кода в методе Confirm_Password_Code"
         "404":
           description: такого recovery_token нет на сервере в принципе
+        401:
+          $ref: '#/components/responses/401'
       security:
       - JWTAuth: []
       summary: Получение полной информации про картинку
@@ -369,6 +373,8 @@ paths:
           description: "данное photo_id не может быть опубликовано пользователем,\
             \ так как это не его фотография или эта фотография уже была опубликова\
             на"
+        401:
+          $ref: '#/components/responses/401'
       security:
       - JWTAuth: []
       summary: Публикуем изображение
@@ -400,6 +406,8 @@ paths:
           description: "данное photo_id не может быть добавлено в галерею пользова\
             телем, так как это не его фотография или эта фотография уже есть у нег\
             о в галерее"
+        401:
+          $ref: '#/components/responses/401'
       security:
       - JWTAuth: []
       summary: Сохраняем в галерею
@@ -428,6 +436,8 @@ paths:
           description: изображение было успешно поставлено на автарку
         "404":
           description: такого photo_id нет на сервере в принципе
+        401:
+          $ref: '#/components/responses/401'
       security:
       - JWTAuth: []
       summary: Ставим изображение пользователю на аватарку
@@ -448,6 +458,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/models'
           description: все хорошо присылаются модели
+        401:
+          $ref: '#/components/responses/401'
       security:
       - JWTAuth: []
       summary: Получаем список моделей для генератора
@@ -506,6 +518,8 @@ paths:
           description: отправлено на генерацию
         "400":
           description: "если не заполнены prompt, anti-prompt или model_name"
+        401:
+          $ref: '#/components/responses/401'
       security:
       - JWTAuth: []
       summary: Начинаем генерацию изображения
@@ -539,6 +553,8 @@ paths:
         "202":
           description: "генерация изображения продолжается и еще не была завершена\
             , но и не сломалась"
+        401:
+          $ref: '#/components/responses/401'
         "404":
           description: такого generation_token нет на сервере в принципе
         "500":
@@ -561,6 +577,8 @@ paths:
         "200":
           content: {}
           description: "все хорошо, информация по юзеру получена"
+        401:
+          $ref: '#/components/responses/401'
       security:
       - JWTAuth: []
       summary: Получаем инфо из профиля
@@ -592,6 +610,8 @@ paths:
         "400":
           description: "изменение имени пользователя на данное имя невозможно, так\
             \ как не удовлетворяет требованиям к уникальности"
+        401:
+          $ref: '#/components/responses/401'
       security:
       - JWTAuth: []
       summary: Меняем имя юзеру
@@ -620,6 +640,8 @@ paths:
         "200":
           content: {}
           description: "все хорошо, пароль был успешно изменен"
+        401:
+          $ref: '#/components/responses/401'
       security:
       - JWTAuth: []
       summary: Меняем пароль юзеру
@@ -652,6 +674,8 @@ paths:
           description: "все хорошо, присланы изображения галереи"
         "404":
           description: такой маркер не найден
+        401:
+          $ref: '#/components/responses/401'
       security:
       - JWTAuth: []
       summary: Получить галерею
@@ -825,7 +849,9 @@ components:
         format: int64
         type: integer
       style: form
-  responses: {}
+  responses:
+    401:
+      description: "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации"
   schemas:
     PostPagingWrapper:
       description: Оболочка для пагинации

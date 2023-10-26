@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T19:29:34.490799171+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T21:32:52.356722874+03:00[Europe/Moscow]")
 @Validated
 @Tag(name = "User", description = "Методы, связанные с получением пользовательских данных")
 public interface UserApi {
@@ -46,6 +46,7 @@ public interface UserApi {
      * 
      *
      * @return все хорошо, информация по юзеру получена (status code 200)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
         operationId = "getProfile",
@@ -53,7 +54,8 @@ public interface UserApi {
         description = "",
         tags = { "User" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "все хорошо, информация по юзеру получена")
+            @ApiResponse(responseCode = "200", description = "все хорошо, информация по юзеру получена"),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")
@@ -78,6 +80,7 @@ public interface UserApi {
      * @param marker Маркер, показывающий начиная с какого id подгружать ресурсы (optional)
      * @return все хорошо, присланы изображения галереи (status code 200)
      *         or такой маркер не найден (status code 404)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
         operationId = "profileGallery",
@@ -88,7 +91,8 @@ public interface UserApi {
             @ApiResponse(responseCode = "200", description = "все хорошо, присланы изображения галереи", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = GalleryPagingWrapper.class))
             }),
-            @ApiResponse(responseCode = "404", description = "такой маркер не найден")
+            @ApiResponse(responseCode = "404", description = "такой маркер не найден"),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")
@@ -122,6 +126,7 @@ public interface UserApi {
      *
      * @param password Пароль пользователя (required)
      * @return все хорошо, пароль был успешно изменен (status code 200)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
         operationId = "profilePassword",
@@ -129,7 +134,8 @@ public interface UserApi {
         description = "",
         tags = { "User" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "все хорошо, пароль был успешно изменен")
+            @ApiResponse(responseCode = "200", description = "все хорошо, пароль был успешно изменен"),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")
@@ -154,6 +160,7 @@ public interface UserApi {
      * @param username Имя пользователя (required)
      * @return все хорошо, имя пользователя было успешно изменено (status code 200)
      *         or изменение имени пользователя на данное имя невозможно, так как не удовлетворяет требованиям к уникальности (status code 400)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
         operationId = "profileUsername",
@@ -162,7 +169,8 @@ public interface UserApi {
         tags = { "User" },
         responses = {
             @ApiResponse(responseCode = "200", description = "все хорошо, имя пользователя было успешно изменено"),
-            @ApiResponse(responseCode = "400", description = "изменение имени пользователя на данное имя невозможно, так как не удовлетворяет требованиям к уникальности")
+            @ApiResponse(responseCode = "400", description = "изменение имени пользователя на данное имя невозможно, так как не удовлетворяет требованиям к уникальности"),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")

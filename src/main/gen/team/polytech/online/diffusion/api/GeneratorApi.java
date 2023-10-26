@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T19:29:34.490799171+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T21:32:52.356722874+03:00[Europe/Moscow]")
 @Validated
 @Tag(name = "Generator", description = "Методы, связанные с генерацией изображений")
 public interface GeneratorApi {
@@ -46,6 +46,7 @@ public interface GeneratorApi {
      * 
      *
      * @return все хорошо присылаются модели (status code 200)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
         operationId = "getGenerator",
@@ -55,7 +56,8 @@ public interface GeneratorApi {
         responses = {
             @ApiResponse(responseCode = "200", description = "все хорошо присылаются модели", content = {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class)))
-            })
+            }),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")
@@ -93,6 +95,7 @@ public interface GeneratorApi {
      * @param seed Seed для генерации нейросети. Оставить пустым для случайного (optional)
      * @return отправлено на генерацию (status code 202)
      *         or если не заполнены prompt, anti-prompt или model_name (status code 400)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
         operationId = "postGenerator",
@@ -103,7 +106,8 @@ public interface GeneratorApi {
             @ApiResponse(responseCode = "202", description = "отправлено на генерацию", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
             }),
-            @ApiResponse(responseCode = "400", description = "если не заполнены prompt, anti-prompt или model_name")
+            @ApiResponse(responseCode = "400", description = "если не заполнены prompt, anti-prompt или model_name"),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")
@@ -132,6 +136,7 @@ public interface GeneratorApi {
      * @param generationToken Токен, по которому можно узнать об статусе генерируемого изображения (required)
      * @return нейронная сеть успешно сгенерировала изображение и в присланном Image будет ссылка на него (status code 201)
      *         or генерация изображения продолжается и еще не была завершена, но и не сломалась (status code 202)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      *         or такого generation_token нет на сервере в принципе (status code 404)
      *         or во время генерации изображения случилась ошибка и оно было потеряно безвозвратно :( (status code 500)
      */
@@ -145,6 +150,7 @@ public interface GeneratorApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = Image.class))
             }),
             @ApiResponse(responseCode = "202", description = "генерация изображения продолжается и еще не была завершена, но и не сломалась"),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации"),
             @ApiResponse(responseCode = "404", description = "такого generation_token нет на сервере в принципе"),
             @ApiResponse(responseCode = "500", description = "во время генерации изображения случилась ошибка и оно было потеряно безвозвратно :(")
         },

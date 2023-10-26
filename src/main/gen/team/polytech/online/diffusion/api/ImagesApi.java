@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T19:29:34.490799171+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T21:32:52.356722874+03:00[Europe/Moscow]")
 @Validated
 @Tag(name = "Images", description = "Методы, связанные с работой с уже созданными изображениями")
 public interface ImagesApi {
@@ -49,6 +49,7 @@ public interface ImagesApi {
      * @param marker Маркер, показывающий начиная с какого id подгружать ресурсы (optional)
      * @return все хорошо, присланы посты (status code 200)
      *         or такой маркер не найден (status code 404)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
         operationId = "feed",
@@ -59,7 +60,8 @@ public interface ImagesApi {
             @ApiResponse(responseCode = "200", description = "все хорошо, присланы посты", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = PostPagingWrapper.class))
             }),
-            @ApiResponse(responseCode = "404", description = "такой маркер не найден")
+            @ApiResponse(responseCode = "404", description = "такой маркер не найден"),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")
@@ -95,6 +97,7 @@ public interface ImagesApi {
      * @return токен активирован и новый пароль успешно принят (status code 200)
      *         or такой токен есть, однако он еще не был активирован присыланием правильного кода в методе Confirm_Password_Code (status code 400)
      *         or такого recovery_token нет на сервере в принципе (status code 404)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
         operationId = "getImage",
@@ -106,7 +109,8 @@ public interface ImagesApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = Image.class))
             }),
             @ApiResponse(responseCode = "400", description = "такой токен есть, однако он еще не был активирован присыланием правильного кода в методе Confirm_Password_Code"),
-            @ApiResponse(responseCode = "404", description = "такого recovery_token нет на сервере в принципе")
+            @ApiResponse(responseCode = "404", description = "такого recovery_token нет на сервере в принципе"),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")
@@ -141,6 +145,7 @@ public interface ImagesApi {
      * @param targetPhotoId ID фото в базе данных (required)
      * @return изображение было успешно поставлено на автарку (status code 200)
      *         or такого photo_id нет на сервере в принципе (status code 404)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
         operationId = "makeAvatar",
@@ -149,7 +154,8 @@ public interface ImagesApi {
         tags = { "Images" },
         responses = {
             @ApiResponse(responseCode = "200", description = "изображение было успешно поставлено на автарку"),
-            @ApiResponse(responseCode = "404", description = "такого photo_id нет на сервере в принципе")
+            @ApiResponse(responseCode = "404", description = "такого photo_id нет на сервере в принципе"),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")
@@ -175,6 +181,7 @@ public interface ImagesApi {
      * @return изображение было успешно опубликовано (status code 201)
      *         or такого photo_id нет на сервере в принципе (status code 400)
      *         or данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликована (status code 404)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
         operationId = "postImage",
@@ -184,7 +191,8 @@ public interface ImagesApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "изображение было успешно опубликовано"),
             @ApiResponse(responseCode = "400", description = "такого photo_id нет на сервере в принципе"),
-            @ApiResponse(responseCode = "404", description = "данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликована")
+            @ApiResponse(responseCode = "404", description = "данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликована"),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")
@@ -210,6 +218,7 @@ public interface ImagesApi {
      * @return изображение было успешно сохранено в галерею (status code 200)
      *         or такого photo_id нет на сервере в принципе (status code 404)
      *         or данное photo_id не может быть добавлено в галерею пользователем, так как это не его фотография или эта фотография уже есть у него в галерее (status code 409)
+     *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
         operationId = "putImage",
@@ -219,7 +228,8 @@ public interface ImagesApi {
         responses = {
             @ApiResponse(responseCode = "200", description = "изображение было успешно сохранено в галерею"),
             @ApiResponse(responseCode = "404", description = "такого photo_id нет на сервере в принципе"),
-            @ApiResponse(responseCode = "409", description = "данное photo_id не может быть добавлено в галерею пользователем, так как это не его фотография или эта фотография уже есть у него в галерее")
+            @ApiResponse(responseCode = "409", description = "данное photo_id не может быть добавлено в галерею пользователем, так как это не его фотография или эта фотография уже есть у него в галерее"),
+            @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")

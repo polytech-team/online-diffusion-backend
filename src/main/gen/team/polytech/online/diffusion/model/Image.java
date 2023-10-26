@@ -22,7 +22,7 @@ import jakarta.annotation.Generated;
  */
 
 @Schema(name = "Image", description = "Объект с информацией об фотографии")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T19:29:34.490799171+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T21:32:52.356722874+03:00[Europe/Moscow]")
 public class Image implements Serializable, Post {
 
   private static final long serialVersionUID = 1L;
