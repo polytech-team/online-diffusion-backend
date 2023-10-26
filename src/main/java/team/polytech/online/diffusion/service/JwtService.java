@@ -42,7 +42,7 @@ public class JwtService {
         String accessToken = generateAccessToken(user);
         String refreshToken = generateRefreshToken(user);
         tokenRepository.save(new Tokens(user.getId(), accessToken, refreshToken));
-        return new AuthInfo(accessToken, refreshToken);
+        return new AuthInfo(refreshToken, accessToken);
     }
 
     public String generateAccessToken(User user) {

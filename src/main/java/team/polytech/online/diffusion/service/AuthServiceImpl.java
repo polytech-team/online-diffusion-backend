@@ -32,18 +32,19 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthInfo login(String username, String password) {
-        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+    public AuthInfo login(String email, String password) {
+        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         User user = (User) auth.getPrincipal();
         return jwtService.generateAuthInfo(user);
     }
 
     @Override
-    public User register(String username, String password) {
-        if (userRepository.findByUsername(username).isEmpty()) {
+    public User register(String email, String username, String password) {
+        if (userRepository.findByUsername(username).isEmpty() && userRepository.findByEmail(email).isEmpty()) {
             User user = new User();
             user.setUsername(username);
             user.setPassword(passwordEncoder.encode(password));
+            user.setEmail(email);
             return userRepository.save(user);
         }
         return null;

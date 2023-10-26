@@ -46,7 +46,6 @@ public class AuthApiController implements AuthApi {
 
     @Override
     public ResponseEntity<AuthInfo> login(String email, String password) {
-        //TODO сделать нормально - login сервиса хочет username вместо нужного email
         //TODO Также адекватное отправление разных кодов ответа нужно
         AuthInfo info = authService.login(email, password);
         if (info == null) {
@@ -66,9 +65,8 @@ public class AuthApiController implements AuthApi {
 
     @Override
     public ResponseEntity<Void> register(String email, String username, String password) {
-        //TODO сделать нормально - регистрация почту не принимает
         //TODO Также адекватное отправление разных кодов ответа нужно
-        User user = authService.register(username, password);
+        User user = authService.register(email, username, password);
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
