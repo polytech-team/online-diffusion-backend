@@ -22,12 +22,14 @@ import jakarta.annotation.Generated;
  */
 
 @Schema(name = "Image", description = "Объект с информацией об фотографии")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T21:32:52.356722874+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-28T21:58:38.197996353+03:00[Europe/Moscow]")
 public class Image implements Serializable, Post {
 
   private static final long serialVersionUID = 1L;
 
   private BigDecimal photoId;
+
+  private String photoUrl;
 
   private String authorName;
 
@@ -48,8 +50,9 @@ public class Image implements Serializable, Post {
   /**
    * Constructor with only required parameters
    */
-  public Image(BigDecimal photoId, String authorName, String authorAvatarUrl, String prompt, String antiPrompt, String seed, String model) {
+  public Image(BigDecimal photoId, String photoUrl, String authorName, String authorAvatarUrl, String prompt, String antiPrompt, String seed, String model) {
     this.photoId = photoId;
+    this.photoUrl = photoUrl;
     this.authorName = authorName;
     this.authorAvatarUrl = authorAvatarUrl;
     this.prompt = prompt;
@@ -76,6 +79,26 @@ public class Image implements Serializable, Post {
 
   public void setPhotoId(BigDecimal photoId) {
     this.photoId = photoId;
+  }
+
+  public Image photoUrl(String photoUrl) {
+    this.photoUrl = photoUrl;
+    return this;
+  }
+
+  /**
+   * URL изображения
+   * @return photoUrl
+  */
+  @NotNull 
+  @Schema(name = "photoUrl", description = "URL изображения", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("photoUrl")
+  public String getPhotoUrl() {
+    return photoUrl;
+  }
+
+  public void setPhotoUrl(String photoUrl) {
+    this.photoUrl = photoUrl;
   }
 
   public Image authorName(String authorName) {
@@ -208,6 +231,7 @@ public class Image implements Serializable, Post {
     }
     Image image = (Image) o;
     return Objects.equals(this.photoId, image.photoId) &&
+        Objects.equals(this.photoUrl, image.photoUrl) &&
         Objects.equals(this.authorName, image.authorName) &&
         Objects.equals(this.authorAvatarUrl, image.authorAvatarUrl) &&
         Objects.equals(this.prompt, image.prompt) &&
@@ -218,7 +242,7 @@ public class Image implements Serializable, Post {
 
   @Override
   public int hashCode() {
-    return Objects.hash(photoId, authorName, authorAvatarUrl, prompt, antiPrompt, seed, model);
+    return Objects.hash(photoId, photoUrl, authorName, authorAvatarUrl, prompt, antiPrompt, seed, model);
   }
 
   @Override
@@ -226,6 +250,7 @@ public class Image implements Serializable, Post {
     StringBuilder sb = new StringBuilder();
     sb.append("class Image {\n");
     sb.append("    photoId: ").append(toIndentedString(photoId)).append("\n");
+    sb.append("    photoUrl: ").append(toIndentedString(photoUrl)).append("\n");
     sb.append("    authorName: ").append(toIndentedString(authorName)).append("\n");
     sb.append("    authorAvatarUrl: ").append(toIndentedString(authorAvatarUrl)).append("\n");
     sb.append("    prompt: ").append(toIndentedString(prompt)).append("\n");

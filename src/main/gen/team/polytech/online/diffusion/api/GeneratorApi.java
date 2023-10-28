@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T21:32:52.356722874+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-28T21:58:38.197996353+03:00[Europe/Moscow]")
 @Validated
 @Tag(name = "Generator", description = "Методы, связанные с генерацией изображений")
 public interface GeneratorApi {
@@ -169,7 +169,7 @@ public interface GeneratorApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"seed\" : \"seed\", \"authorName\" : \"authorName\", \"authorAvatarUrl\" : \"authorAvatarUrl\", \"photoId\" : 0.8008281904610115, \"anti-prompt\" : \"anti-prompt\", \"model\" : \"model\", \"prompt\" : \"prompt\" }";
+                    String exampleString = "{ \"seed\" : \"seed\", \"authorName\" : \"authorName\", \"authorAvatarUrl\" : \"authorAvatarUrl\", \"photoId\" : 0.8008281904610115, \"photoUrl\" : \"https://foo.ru/foo.jpg\", \"anti-prompt\" : \"anti-prompt\", \"model\" : \"model\", \"prompt\" : \"prompt\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

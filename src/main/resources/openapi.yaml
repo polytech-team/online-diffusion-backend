@@ -933,6 +933,7 @@ components:
         authorName: authorName
         authorAvatarUrl: authorAvatarUrl
         photoId: 0.8008281904610115
+        photoUrl: https://foo.ru/foo.jpg
         anti-prompt: anti-prompt
         model: model
         prompt: prompt
@@ -940,6 +941,9 @@ components:
         photoId:
           description: Id фотографии
           type: number
+        photoUrl:
+          description: URL изображения
+          type: string
         authorName:
           description: Имя автора
           type: string
@@ -964,6 +968,7 @@ components:
       - authorName
       - model
       - photoId
+      - photoUrl
       - prompt
       - seed
       type: object
