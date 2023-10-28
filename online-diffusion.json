@@ -1,0 +1,1026 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Online diffusion API",
+    "version": "0.0.1",
+    "x-logo": {
+      "url": "https://i.imgur.com/1kUh580.jpg"
+    },
+    "description": "Описание спецификации всех API методов, используемых в online diffusion сервисе"
+  },
+  "paths": {
+    "/api/v1/auth/login": {
+      "get": {
+        "description": "",
+        "operationId": "login",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/email"
+          },
+          {
+            "$ref": "#/components/parameters/password"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "все хорошо, авторизация прошла успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthInfo"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "логин или пароль неверные"
+          }
+        },
+        "summary": "Авторизация"
+      },
+      "parameters": []
+    },
+    "/api/v1/auth/refresh-token": {
+      "put": {
+        "description": "",
+        "operationId": "refresh-token",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/refreshToken"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "все хорошо, регистрация прошла успешно, юзер должен подтвердить почту"
+          },
+          "404": {
+            "description": "рефреш токен истек или невалиден"
+          }
+        },
+        "summary": "Обновление токена авторизации"
+      },
+      "parameters": []
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "description": "",
+        "operationId": "register",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/email"
+          },
+          {
+            "$ref": "#/components/parameters/username"
+          },
+          {
+            "$ref": "#/components/parameters/password"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "все хорошо, регистрация прошла успешно, юзер должен подтвердить почту"
+          },
+          "400": {
+            "description": "регистрация невозможна, так как какие-то из полей были некоректными",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidData"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "регистрация невозможна, так как некоторые поля удовлетворяют требованиям уникальности"
+          }
+        },
+        "summary": "Регистрация на портале"
+      },
+      "parameters": []
+    },
+    "/api/v1/auth/recovery": {
+      "post": {
+        "description": "",
+        "operationId": "recovery",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/email"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "почта принята, код отправлен, если почта есть в базе",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/recoveryToken"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "неккоректные данные, которые точно не являются почтовым адресом"
+          }
+        },
+        "summary": "Получение кода для восстановления на почту"
+      },
+      "parameters": []
+    },
+    "/api/v1/auth/confirmation": {
+      "put": {
+        "description": "",
+        "operationId": "confirmation",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/code"
+          },
+          {
+            "$ref": "#/components/parameters/recoveryToken"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "код правильный и соответсвует введеному recovery_token, можно присылать новый пароль через метод Confirm_new_Password",
+            "content": {}
+          },
+          "400": {
+            "description": "присылается, когда такой recovery_token есть и он валидный, однако код был введен неверно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/numOfTriesLeft"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "такого recovery_token нет на сервере в принципе"
+          }
+        },
+        "summary": "Подтверждение правильности кода"
+      },
+      "parameters": []
+    },
+    "/api/v1/auth/new-password": {
+      "put": {
+        "description": "",
+        "operationId": "new-password",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/code"
+          },
+          {
+            "$ref": "#/components/parameters/recoveryToken"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "токен активирован и новый пароль успешно принят",
+            "content": {}
+          },
+          "400": {
+            "description": "такой токен есть, однако он еще не был активирован присыланием правильного кода в методе Confirm_Password_Code"
+          },
+          "404": {
+            "description": "такого recovery_token нет на сервере в принципе"
+          }
+        },
+        "summary": "Ввод нового пароля"
+      },
+      "parameters": []
+    },
+    "/api/v1/feed": {
+      "get": {
+        "description": "",
+        "operationId": "feed",
+        "tags": [
+          "Images"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/marker"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "все хорошо, присланы посты",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostPagingWrapper"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "такой маркер не найден"
+          }
+        },
+        "summary": "Получение списка постов",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "parameters": []
+    },
+    "/api/v1/images/{photoId}": {
+      "get": {
+        "description": "",
+        "operationId": "get-image",
+        "tags": [
+          "Images"
+        ],
+        "parameters": [],
+        
+        "responses": {
+          "200": {
+            "description": "токен активирован и новый пароль успешно принят",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Image"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "такой токен есть, однако он еще не был активирован присыланием правильного кода в методе Confirm_Password_Code"
+          },
+          "404": {
+            "description": "такого recovery_token нет на сервере в принципе"
+          }
+        },
+        "summary": "Получение полной информации про картинку",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/photoId"
+        }
+      ],
+      "post": {
+        "summary": "Публикуем изображение",
+        "description": "",
+        "operationId": "post-image",
+        "tags": [
+          "Images"
+        ],
+        "parameters": [],
+        
+        "responses": {
+          "201": {
+            "description": "изображение было успешно опубликовано"
+          },
+          "400": {
+            "description": "такого photo_id нет на сервере в принципе"
+          },
+          "404": {
+            "description": "данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликована"
+          }
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Сохраняем в галерею",
+        "description": "",
+        "operationId": "put-image",
+        "tags": [
+          "Images"
+        ],
+        "parameters": [],
+        
+        "responses": {
+          "200": {
+            "description": "изображение было успешно сохранено в галерею"
+          },
+          "404": {
+            "description": "такого photo_id нет на сервере в принципе"
+          },
+          "409": {
+            "description": "данное photo_id не может быть добавлено в галерею пользователем, так как это не его фотография или эта фотография уже есть у него в галерее"
+          }
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/images/make-avatar": {
+      "put": {
+        "description": "",
+        "operationId": "make-avatar",
+        "tags": [
+          "Images"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/targetPhotoId"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "изображение было успешно поставлено на автарку",
+            "content": {}
+          },
+          "404": {
+            "description": "такого photo_id нет на сервере в принципе"
+          }
+        },
+        "summary": "Ставим изображение пользователю на аватарку",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "parameters": []
+    },
+    "/api/v1/generator": {
+      "get": {
+        "description": "",
+        "operationId": "get-generator",
+        "tags": [
+          "Generator"
+        ],
+        "parameters": [],
+        
+        "responses": {
+          "200": {
+            "description": "все хорошо присылаются модели",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Получаем список моделей для генератора",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "parameters": [],
+      "post": {
+        "summary": "Начинаем генерацию изображения",
+        "description": "",
+        "operationId": "post-generator",
+        "tags": [
+          "Generator"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/prompt"
+          },
+          {
+            "$ref": "#/components/parameters/anti-prompt"
+          },
+          {
+            "$ref": "#/components/parameters/seed"
+          },
+          {
+            "$ref": "#/components/parameters/modelName"
+          }
+        ],
+        
+        "responses": {
+          "202": {
+            "description": "отправлено на генерацию",
+            "headers": {},
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/generationToken"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "если не заполнены prompt, anti-prompt или model_name"
+          }
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "trace": {
+        "summary": "Получаем сделанное изображение в цикле",
+        "description": "",
+        "operationId": "trace-generator",
+        "tags": [
+          "Generator"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/generationToken"
+          }
+        ],
+        
+        "responses": {
+          "201": {
+            "description": "нейронная сеть успешно сгенерировало изображение и в присланном Image будет ссылка на него",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Image"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "генерация изображения продолжается и еще не была завершена, но и не сломалась"
+          },
+          "404": {
+            "description": "такого generation_token нет на сервере в принципе"
+          },
+          "500": {
+            "description": "во время генерации изображения случилась ошибка и оно было потеряно безвозвратно :("
+          }
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/profile": {
+      "get": {
+        "description": "",
+        "operationId": "get-profile",
+        "tags": [
+          "User"
+        ],
+        "parameters": [],
+        
+        "responses": {
+          "200": {
+            "description": "все хорошо, информация по юзеру получена",
+            "content": {}
+          }
+        },
+        "summary": "Получаем инфо из профиля",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "parameters": []
+    },
+    "/api/v1/profile/username": {
+      "put": {
+        "description": "",
+        "operationId": "profile-username",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/username"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "все хорошо, имя пользователя было успешно изменено",
+            "content": {}
+          },
+          "400": {
+            "description": "изменение имени пользователя на данное имя невозможно, так как не удовлетворяет требованиям к уникальности"
+          }
+        },
+        "summary": "Меняем имя юзеру",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "parameters": []
+    },
+    "/api/v1/profile/password": {
+      "put": {
+        "description": "",
+        "operationId": "profile-password",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/password"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "все хорошо, пароль был успешно изменен",
+            "content": {}
+          }
+        },
+        "summary": "Меняем пароль юзеру",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "parameters": []
+    },
+    "/api/v1/profile/gallery": {
+      "get": {
+        "description": "",
+        "operationId": "profile-gallery",
+        "tags": [
+          "User",
+          "Images"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/marker"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "все хорошо, присланы изображения галереи",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GalleryPagingWrapper"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "такой маркер не найден"
+          }
+        },
+        "summary": "Получить галерею",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "parameters": []
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Example: \n> Authorization: Bearer <token>",
+        "x-last-modified": 1698183246392
+      }
+    },
+    "schemas": {
+      "PostPagingWrapper": {
+        "type": "object",
+        "properties": {
+          "nextMarker": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Маркер для следующего запроса"
+          },
+          "posts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Post"
+            },
+            "description": "Список присланных постов в нужном порядке"
+          }
+        },
+        "description": "Оболочка для пагинации"
+      },
+      "GalleryPagingWrapper": {
+        "type": "object",
+        "properties": {
+          "nextMarker": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Маркер для следующего запроса"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Image"
+            },
+            "description": "Список присланных изображений в нужном порядке"
+          }
+        },
+        "required": [],
+        "description": "Оболочка для пагинации"
+      },
+      "Post": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Image"
+          }
+        ],
+        "description": "Пост в ленте с изображением"
+      },
+      "accessToken": {
+        "type": "string",
+        "description": "Токен авторизации"
+      },
+      "refreshToken": {
+        "type": "string",
+        "description": "Токен, используемый для обновления авторизации, когда accessToken кончился"
+      },
+      "invalidData": {
+        "type": "string",
+        "enum": [
+          "email",
+          "username",
+          "password"
+        ],
+        "description": "показывает какие именно поля были некорректными"
+      },
+      "recoveryToken": {
+        "type": "string",
+        "description": "Токен, назначаемый сессии сброса пароля"
+      },
+      "numOfTriesLeft": {
+        "type": "integer",
+        "format": "int32",
+        "description": "приходит в случае ввода неправильного кода для токена. Указывает сколько попыток еще осталось"
+      },
+      "Image": {
+        "type": "object",
+        "properties": {
+          "photoId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Id фотографии"
+          },
+          "authorName": {
+            "type": "string",
+            "description": "Имя автора"
+          },
+          "authorAvatarUrl": {
+            "type": "string",
+            "description": "URL аватара автора"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "prompt использовшийся для создания изображения"
+          },
+          "anti-prompt": {
+            "type": "string",
+            "description": "anti-prompt использовшийся для создания изображения"
+          },
+          "seed": {
+            "type": "string",
+            "description": "seed, использовшийся для создания изображения"
+          },
+          "model": {
+            "type": "string",
+            "description": "Модель, использувшееся для создания изображения"
+          }
+        },
+        "description": "Объект с информацией об фотографии",
+        "required": [
+          "photoId",
+          "authorName",
+          "authorAvatarUrl",
+          "prompt",
+          "anti-prompt",
+          "seed",
+          "model"
+        ]
+      },
+      "generationToken": {
+        "type": "string",
+        "description": "Токен, назначаемый сессии генерации изображения"
+      },
+      "models": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "Модель для генерации"
+        },
+        "description": "Все модели, которые можно использовать для генерации"
+      },
+      "ProfileInfo": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Имя пользователя"
+          },
+          "email": {
+            "type": "string",
+            "description": "Адрес почты"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "Ссылка на аватар"
+          },
+          "generated": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Количество сгенерированных фото"
+          },
+          "gallery_images": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Количество фото в галерее"
+          },
+          "posted": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Количество сделаных постов"
+          }
+        },
+        "description": "Информация по юзеру",
+        "required": [
+          "username",
+          "email",
+          "avatarUrl",
+          "generated",
+          "gallery_images",
+          "posted"
+        ]
+      },
+      "AuthInfo": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Токен, используемый для обновления авторизации, когда accessToken кончился"
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "JWT токен авторизированного пользователя"
+          }
+        },
+        "description": "Ответная информация, содержащая JWT токены пользователя",
+        "required": [
+          "refreshToken",
+          "accessToken"
+        ]
+      }
+    },
+    "headers": {},
+    "responses": {},
+    "parameters": {
+      "email": {
+        "in": "query",
+        "required": true,
+        "description": "Почта пользователя",
+        "schema": {
+          "type": "string",
+          "format": "email",
+          "example": "foo@gmail.com"
+        },
+        "name": "email"
+      },
+      "password": {
+        "in": "query",
+        "required": true,
+        "description": "Пароль пользователя",
+        "schema": {
+          "type": "string",
+          "maxLength": 32,
+          "minLength": 8,
+          "example": "querty123"
+        },
+        "name": "password"
+      },
+      "username": {
+        "in": "query",
+        "required": true,
+        "description": "Имя пользователя",
+        "schema": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 32,
+          "example": "user"
+        },
+        "name": "username"
+      },
+      "refreshToken": {
+        "in": "query",
+        "required": true,
+        "description": "Токен, используемый для обновления авторизации, когда accessToken кончился",
+        "schema": {
+          "type": "string",
+          "example": "1234"
+        },
+        "name": "refreshToken"
+      },
+      "recoveryToken": {
+        "in": "query",
+        "required": true,
+        "description": "Токен, назначаемый сессии сброса пароля",
+        "schema": {
+          "type": "string",
+          "example": "querty123"
+        },
+        "name": "recoveryToken"
+      },
+      "code": {
+        "in": "query",
+        "name": "code",
+        "description": "Код для сброса пароля с электронной почты",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "example": 123456
+        }
+      },
+      "marker": {
+        "in": "query",
+        "name": "marker",
+        "description": "Маркер, показывающий начиная с какого id подгружать ресурсы",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "example": 1
+        }
+      },
+      "photoId": {
+        "in": "path",
+        "name": "photoId",
+        "description": "ID фото в базе данных",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "example": 123456
+        }
+      },
+      "prompt": {
+        "in": "query",
+        "required": true,
+        "description": "prompt для создания фото",
+        "schema": {
+          "type": "string",
+          "example": "cool looking panda"
+        },
+        "name": "prompt"
+      },
+      "anti-prompt": {
+        "in": "query",
+        "required": true,
+        "description": "anti-prompt для создания фото",
+        "schema": {
+          "type": "string",
+          "example": "ugly face"
+        },
+        "name": "anti-prompt"
+      },
+      "seed": {
+        "in": "query",
+        "name": "seed",
+        "description": "Seed для генерации нейросети. Оставить пустым для случайного",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "example": 123456
+        }
+      },
+      "modelName": {
+        "in": "query",
+        "required": true,
+        "description": "Название модели, которая будет использоваться для генерации",
+        "schema": {
+          "type": "string",
+          "example": "anime-diffusion"
+        },
+        "name": "modelName"
+      },
+      "imageUrl": {
+        "in": "query",
+        "required": true,
+        "description": "Url полученного изображения",
+        "schema": {
+          "type": "string",
+          "example": "https://i.imgur.com/douh7U1.gif"
+        },
+        "name": "imageUrl"
+      },
+      "generationToken": {
+        "in": "query",
+        "required": true,
+        "description": "Токен, по которому можно узнать об статусе генерируемого изображения",
+        "schema": {
+          "type": "string",
+          "example": 123
+        },
+        "name": "generationToken"
+      },
+      "targetPhotoId": {
+        "in": "query",
+        "name": "targetPhotoId",
+        "description": "ID фото в базе данных",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Методы, связанные с авторизацией",
+      "externalDocs": {
+        "description": "",
+        "url": ""
+      }
+    },
+    {
+      "name": "Images",
+      "description": "Методы, связанные с работой с уже созданными изображениями",
+      "externalDocs": {
+        "description": "",
+        "url": ""
+      }
+    },
+    {
+      "name": "Generator",
+      "description": "Методы, связанные с генерацией изображений",
+      "externalDocs": {
+        "description": "",
+        "url": ""
+      }
+    },
+    {
+      "name": "User",
+      "description": "Методы, связанные с получением пользовательских данных",
+      "externalDocs": {
+        "description": "",
+        "url": ""
+      }
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Локальный сервер, актуально для запуска на своем компьютере",
+      "variables": {},
+      "x-last-modified": 1698183338768
+    }
+  ],
+  "security": [
+    {
+      "JWTAuth": []
+    }
+  ],
+  "externalDocs": {
+    "url": "https://online-diffusion.youtrack.cloud/articles/OD-A-4/API-Specification",
+    "description": "Описание спецификации в документации проекта"
+  }
+}

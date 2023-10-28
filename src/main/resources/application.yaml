@@ -1,6 +1,12 @@
+server:
+  port: 8080
 spring:
+  jackson:
+    date-format: team.polytech.online.diffusion.RFC3339DateFormat
+    serialization:
+      write-dates-as-timestamps: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/mydatabase
+    url: jdbc:postgresql://localhost:3306/mydatabase
     username: myuser
     password: secret
     driver-class-name: org.postgresql.Driver
