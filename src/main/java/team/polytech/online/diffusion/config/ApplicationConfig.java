@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import team.polytech.automatic.webui.invoker.ApiClient;
+
 @Configuration
 public class ApplicationConfig {
     private final UserDetailsService userDetailsService;
@@ -36,5 +38,12 @@ public class ApplicationConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    ApiClient getClient() {
+        ApiClient client = new ApiClient();
+        client.setBasePath("http://127.0.0.1:7860");
+        return client;
     }
 }
