@@ -34,7 +34,6 @@ import team.polytech.online.diffusion.service.UserServer;
 public class UserApiController implements UserApi {
 
     private final NativeWebRequest request;
-    @Autowired
     private final UserServer userServer;
 
     @Autowired
@@ -52,30 +51,22 @@ public class UserApiController implements UserApi {
 
     @Override
     public ResponseEntity<Void> profilePassword(String newPassword) {
-
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         boolean passwordChanged = userServer.changeUserPassword(username, newPassword);
-
         if (passwordChanged) {
             return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @Override
     public ResponseEntity<Void> profileUsername(String newUsername) {
-
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        // 执行用户名更改操作，使用 userId 作为标识
         boolean usernameChanged = userServer.changeUsername(username, newUsername);
         if (usernameChanged) {
             return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            // 用户不存在或用户名更改失败
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }

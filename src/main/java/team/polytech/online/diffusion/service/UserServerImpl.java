@@ -10,7 +10,7 @@ import team.polytech.online.diffusion.repository.UserRepository;
 import java.util.Optional;
 
 @Service
-public class UserServerImpl implements UserServer{
+public class UserServerImpl implements UserServer {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -29,36 +29,33 @@ public class UserServerImpl implements UserServer{
     @Transactional
     public boolean changeUserPassword(String username, String newPassword) {
         Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-            return true;
-        } else {
+        if (userOptional.isEmpty()) {
             return false;
         }
+        User user = userOptional.get();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return true;
     }
 
     @Override
     @Transactional
     public boolean changeUsername(String username, String newUsername) {
         Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (usernameIsUnique(newUsername)) {
-
-                user.setUsername(newUsername);
-                userRepository.save(user);
-                return true;
-            } else {
-                return false;
-            }
+        if (userOptional.isEmpty()) {
+            return false;
         }
-        return false;
+        if (!usernameIsUnique(newUsername)) {
+            return false;
+        }
+        User user = userOptional.get();
+        user.setUsername(newUsername);
+        userRepository.save(user);
+        return true;
     }
+
     @Override
     public boolean usernameIsUnique(String username) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        return !userOptional.isPresent();
+        return !userRepository.findByUsername(username).isPresent();
     }
 }

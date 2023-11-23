@@ -31,11 +31,11 @@ public class JwtService {
 
     private Claims extractClaims(String token, SecretKey secretKey) {
         return Jwts
-            .parser()
-            .verifyWith(secretKey)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
+                .parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public AuthInfo generateAuthInfo(User user) {
@@ -56,12 +56,12 @@ public class JwtService {
     private String generateToken(User user, SecretKey secretKey, long expiration) {
         Date now = new Date();
         return Jwts
-            .builder()
-            .subject(String.valueOf(user.getId()))
-            .issuedAt(now)
-            .expiration(new Date(now.getTime() + expiration))
-            .signWith(secretKey, Jwts.SIG.HS256)
-            .compact();
+                .builder()
+                .subject(String.valueOf(user.getId()))
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + expiration))
+                .signWith(secretKey, Jwts.SIG.HS256)
+                .compact();
     }
 
     public Long getUserIdFromAccess(String accessToken) {
@@ -71,8 +71,8 @@ public class JwtService {
         }
         Optional<Tokens> tokens = tokenRepository.findById(Long.valueOf(claims.getSubject()));
         return tokens.isPresent() && Objects.equals(tokens.get().getAccessToken(), accessToken)
-            ? tokens.get().getUserId()
-            : null;
+                ? tokens.get().getUserId()
+                : null;
     }
 
     public Long getUserIdFromRefresh(String refreshToken) {
@@ -83,8 +83,8 @@ public class JwtService {
             }
             Optional<Tokens> tokens = tokenRepository.findById(Long.valueOf(claims.getSubject()));
             return tokens.isPresent() && Objects.equals(tokens.get().getRefreshToken(), refreshToken)
-                ? tokens.get().getUserId()
-                : null;
+                    ? tokens.get().getUserId()
+                    : null;
         } catch (Exception exception) {
             return null;
         }
