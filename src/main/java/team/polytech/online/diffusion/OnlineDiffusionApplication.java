@@ -14,11 +14,11 @@ import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.repository.UserRepository;
 
 @SpringBootApplication(
-        nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
+    nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
 @ComponentScan(
-        basePackages = {"team.polytech.online.diffusion", "team.polytech.online.diffusion.api", "team.polytech.online.diffusion.config"},
-        nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
+    basePackages = {"team.polytech.online.diffusion", "team.polytech.online.diffusion.api" , "team.polytech.online.diffusion.config"},
+    nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
 public class OnlineDiffusionApplication implements CommandLineRunner {
     private final UserRepository userRepository;
