@@ -10,12 +10,12 @@ import team.polytech.online.diffusion.repository.UserRepository;
 import java.util.Optional;
 
 @Service
-public class UserServerImpl implements UserServer {
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServerImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -45,7 +45,7 @@ public class UserServerImpl implements UserServer {
         if (userOptional.isEmpty()) {
             return false;
         }
-        if (!usernameIsUnique(newUsername)) {
+        if (userRepository.existsByUsername(newUsername)) {
             return false;
         }
         User user = userOptional.get();
@@ -54,8 +54,4 @@ public class UserServerImpl implements UserServer {
         return true;
     }
 
-    @Override
-    public boolean usernameIsUnique(String username) {
-        return !userRepository.findByUsername(username).isPresent();
-    }
 }
