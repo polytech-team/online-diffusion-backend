@@ -1,30 +1,19 @@
 package team.polytech.online.diffusion.api;
 
-import team.polytech.online.diffusion.model.GalleryPagingWrapper;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import jakarta.validation.constraints.*;
-import jakarta.validation.Valid;
-
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+
 import jakarta.annotation.Generated;
+import team.polytech.online.diffusion.service.UserService;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T02:19:33.552470+03:00[Europe/Moscow]")
 @Controller
@@ -32,15 +21,39 @@ import jakarta.annotation.Generated;
 public class UserApiController implements UserApi {
 
     private final NativeWebRequest request;
+    private final UserService userService;
 
     @Autowired
-    public UserApiController(NativeWebRequest request) {
+    public UserApiController(NativeWebRequest request, UserService userService) {
         this.request = request;
+        this.userService = userService;
+
     }
 
     @Override
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
+    }
+
+
+    @Override
+    public ResponseEntity<Void> profilePassword(String newPassword) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean passwordChanged = userService.changeUserPassword(username, newPassword);
+        if (passwordChanged) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public ResponseEntity<Void> profileUsername(String newUsername) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean usernameChanged = userService.changeUsername(username, newUsername);
+        if (usernameChanged) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }
