@@ -242,5 +242,12 @@
             <version>0.0.1</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>team.polytech</groupId>
+            <artifactId>spring-imgur-api-client</artifactId>
+            <version>0.0.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>
