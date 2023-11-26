@@ -941,7 +941,8 @@ components:
       properties:
         photoId:
           description: Id фотографии
-          type: number
+          format: int64
+          type: integer
         photoUrl:
           description: URL изображения
           type: string
@@ -959,7 +960,8 @@ components:
           type: string
         seed:
           description: "seed, использовшийся для создания изображения"
-          type: string
+          format: int32
+          type: integer
         model:
           description: "Модель, использувшееся для создания изображения"
           type: string

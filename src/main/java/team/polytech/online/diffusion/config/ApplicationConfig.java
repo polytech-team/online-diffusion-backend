@@ -1,6 +1,7 @@
 package team.polytech.online.diffusion.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,12 +11,16 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import team.polytech.automatic.webui.invoker.ApiClient;
+import team.polytech.imgur.invoker.ImgurApiClient;
+import team.polytech.imgur.invoker.auth.ApiKeyAuth;
 
 @Configuration
 public class ApplicationConfig {
     private final UserDetailsService userDetailsService;
+
+    @Value("${imgur.clientId}")
+    private String clientId;
 
     @Autowired
     public ApplicationConfig(UserDetailsService userDetailsService) {
@@ -45,5 +50,15 @@ public class ApplicationConfig {
         ApiClient client = new ApiClient();
         client.setBasePath("http://127.0.0.1:7860");
         return client;
+    }
+
+    @Bean
+    ImgurApiClient getImgurApi() {
+        ImgurApiClient anonymous = new ImgurApiClient(true);
+        anonymous.setBasePath("https://api.imgur.com");
+
+        ApiKeyAuth client = (ApiKeyAuth) anonymous.getAuthentication("clientId");
+        client.setApiKey("Client-ID " + clientId);
+        return anonymous;
     }
 }

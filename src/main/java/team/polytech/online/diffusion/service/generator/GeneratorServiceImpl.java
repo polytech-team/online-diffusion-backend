@@ -1,6 +1,7 @@
 package team.polytech.online.diffusion.service.generator;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import team.polytech.automatic.webui.api.DefaultApi;
 import team.polytech.automatic.webui.invoker.ApiClient;
@@ -8,7 +9,9 @@ import team.polytech.automatic.webui.model.SDModelItem;
 import team.polytech.automatic.webui.model.StableDiffusionProcessingTxt2Img;
 import team.polytech.online.diffusion.entity.GenerationStatus;
 import team.polytech.online.diffusion.entity.SDTxt2ImgRequest;
+import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.repository.GenerationStatusRepository;
+import team.polytech.online.diffusion.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,18 +23,27 @@ public class GeneratorServiceImpl implements GeneratorService {
     private final DefaultApi automaticUiApi;
     private final StableDiffusionRequestSender sender;
     private final GenerationStatusRepository generationRepository;
+    private final UserRepository userRepository;
 
 
     @Autowired
     public GeneratorServiceImpl(ApiClient client, StableDiffusionRequestSender sender,
-                                GenerationStatusRepository generationRepository) {
+                                GenerationStatusRepository generationRepository,
+                                UserRepository userRepository) {
         this.automaticUiApi = new DefaultApi(client);
         this.sender = sender;
         this.generationRepository = generationRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     public GenerationStatus generate(String prompt, String antiPrompt, String modelName, int seed) {
+        Optional<User> userOptional = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        if (userOptional.isEmpty()) {
+            return null;
+        }
+
         StableDiffusionProcessingTxt2Img request = new StableDiffusionProcessingTxt2Img();
         request.prompt(prompt);
         request.negativePrompt(antiPrompt);
@@ -44,7 +56,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         String uuid = UUID.randomUUID().toString();
 
         GenerationStatus result = generationRepository.save(new GenerationStatus(uuid, GenerationStatus.Stage.NOT_STARTED));
-        sender.sendRequest(new SDTxt2ImgRequest(uuid, request));
+        sender.sendRequest(new SDTxt2ImgRequest(uuid, userOptional.get().getId(), modelName, request));
         return result;
     }
 

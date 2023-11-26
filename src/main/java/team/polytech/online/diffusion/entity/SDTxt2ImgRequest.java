@@ -8,16 +8,22 @@ import javax.annotation.Nonnull;
 
 public class SDTxt2ImgRequest {
     private static final String JSON_PROPERTY_UUID = "UUID";
+    private static final String JSON_PROPERTY_USER_ID = "user_id";
     private static final String JSON_PROPERTY_REQUEST = "request";
+    private static final String JSON_PROPERTY_MODEL = "model";
 
     private String UUID;
+    private long userId;
+    private String model;
     private StableDiffusionProcessingTxt2Img request;
 
     public SDTxt2ImgRequest() {
     }
 
-    public SDTxt2ImgRequest(String UUID, StableDiffusionProcessingTxt2Img request) {
+    public SDTxt2ImgRequest(String UUID, long userId, String model, StableDiffusionProcessingTxt2Img request) {
         this.UUID = UUID;
+        this.userId = userId;
+        this.model = model;
         this.request = request;
     }
 
@@ -45,5 +51,29 @@ public class SDTxt2ImgRequest {
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRequest(@Nonnull StableDiffusionProcessingTxt2Img request) {
         this.request = request;
+    }
+
+    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public long getUserId() {
+        return userId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_MODEL)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public String getModel() {
+        return model;
+    }
+
+    @JsonProperty(JSON_PROPERTY_MODEL)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setModel(String model) {
+        this.model = model;
     }
 }
