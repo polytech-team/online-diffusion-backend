@@ -41,4 +41,4 @@ out/
 .DS_Store
 
 ### Secrets ###
-/src/main/resources/application-secrets.yaml
+src/main/resources/application-secrets.yaml
