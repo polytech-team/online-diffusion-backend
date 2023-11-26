@@ -2,8 +2,11 @@
 
 Запуск сервера:
 1) Устанавливаем docker себе на компьютер
-2) Удостоверяемся, что у вашего пользователя есть права на запуск `Sudo usermod -aG docker <user>`
-3) Можно запускать в IDE (Проверено в Intellij Idea Ultimate 2023.2.2)
+2) Устанавливаем https://github.com/polytech-team/spring-automatic-api-client через команду `mvn clean install`
+3) Устанавливаем https://github.com/AUTOMATIC1111/stable-diffusion-webui и запускаем с командой `--api`
+4) Удостоверяемся, что у вашего пользователя есть права на запуск `Sudo usermod -aG docker <user>`
+5) Делаем копию application-example.yaml, называемую application-secrets.yaml и заполняем там поля своими токенами/секретами
+6) Можно запускать в IDE (Проверено в Intellij Idea Ultimate 2023.2.2)
 
 В gen директории код менять руками не надо, либо надо только в крайних случаях, обсужденных всеми вместе
 Так как этот код генерируется автоматически. Чтобы правильно поменять код в gen папке:

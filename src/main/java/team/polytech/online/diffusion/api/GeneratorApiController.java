@@ -1,30 +1,20 @@
 package team.polytech.online.diffusion.api;
 
-import team.polytech.online.diffusion.model.Image;
 
-
+import jakarta.annotation.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.context.request.NativeWebRequest;
-
-import jakarta.validation.constraints.*;
-import jakarta.validation.Valid;
+import team.polytech.online.diffusion.entity.GenerationStatus;
+import team.polytech.online.diffusion.model.Image;
+import team.polytech.online.diffusion.service.generator.GeneratorService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import jakarta.annotation.Generated;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T02:19:33.552470+03:00[Europe/Moscow]")
 @Controller
@@ -32,10 +22,51 @@ import jakarta.annotation.Generated;
 public class GeneratorApiController implements GeneratorApi {
 
     private final NativeWebRequest request;
+    private final GeneratorService generatorService;
+    private final ThreadLocalRandom random = ThreadLocalRandom.current();
 
     @Autowired
-    public GeneratorApiController(NativeWebRequest request) {
+    public GeneratorApiController(NativeWebRequest request,
+                                  GeneratorService generatorService) {
         this.request = request;
+        this.generatorService = generatorService;
+    }
+
+    @Override
+    public ResponseEntity<List<String>> getGenerator() {
+        return new ResponseEntity<>(generatorService.getModels(), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<String> postGenerator(String prompt, String antiPrompt, String modelName, Optional<Integer> seed) {
+        int generationSeed = seed.orElse(random.nextInt());
+        try {
+            return new ResponseEntity<>(generatorService.generate(prompt, antiPrompt, modelName, generationSeed).getUUID(), HttpStatus.ACCEPTED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Image> generationStatus(String generationToken) {
+        GenerationStatus status;
+        try {
+            status = generatorService.getGenerationStatus(generationToken).orElse(null);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (status == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return responseFromStatus(status);
+    }
+
+    private ResponseEntity<Image> responseFromStatus(GenerationStatus status) {
+        return switch (status.getStage()) {
+            case NOT_STARTED, IN_PROGRESS -> new ResponseEntity<>(HttpStatus.ACCEPTED);
+            case SUCCESSFUL -> new ResponseEntity<>(HttpStatus.CREATED);
+            case FAILED -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        };
     }
 
     @Override

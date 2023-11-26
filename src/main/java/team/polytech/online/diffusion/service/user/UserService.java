@@ -1,4 +1,4 @@
-package team.polytech.online.diffusion.service;
+package team.polytech.online.diffusion.service.user;
 
 import team.polytech.online.diffusion.entity.User;
 

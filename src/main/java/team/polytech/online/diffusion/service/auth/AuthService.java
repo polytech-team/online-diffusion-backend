@@ -1,4 +1,4 @@
-package team.polytech.online.diffusion.service;
+package team.polytech.online.diffusion.service.auth;
 
 import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.model.AuthInfo;

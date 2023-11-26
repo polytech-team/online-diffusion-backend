@@ -13,7 +13,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import java.util.Optional;
 
 import jakarta.annotation.Generated;
-import team.polytech.online.diffusion.service.UserService;
+import team.polytech.online.diffusion.service.user.UserService;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T02:19:33.552470+03:00[Europe/Moscow]")
 @Controller

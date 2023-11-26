@@ -166,6 +166,12 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
             <version>3.1.5</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit -->
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-rabbit</artifactId>
+            <version>3.1.0</version>
+        </dependency>
 
         <!-- @Nullable annotation -->
         <dependency>
@@ -228,6 +234,13 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>team.polytech</groupId>
+            <artifactId>spring-automatic-api-client</artifactId>
+            <version>0.0.1</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
