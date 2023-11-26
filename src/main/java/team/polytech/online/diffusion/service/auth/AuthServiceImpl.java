@@ -1,6 +1,4 @@
-package team.polytech.online.diffusion.service;
-
-import java.util.Optional;
+package team.polytech.online.diffusion.service.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,10 +6,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.model.AuthInfo;
 import team.polytech.online.diffusion.repository.UserRepository;
+
+import java.util.Optional;
 
 @Service
 public class AuthServiceImpl implements AuthService {

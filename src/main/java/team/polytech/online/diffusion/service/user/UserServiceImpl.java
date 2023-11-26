@@ -1,4 +1,4 @@
-package team.polytech.online.diffusion.service;
+package team.polytech.online.diffusion.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.repository.UserRepository;
+import team.polytech.online.diffusion.service.user.UserService;
 
 import java.util.Optional;
 

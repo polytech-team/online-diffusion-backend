@@ -39,3 +39,6 @@ out/
 .vscode/
 
 .DS_Store
+
+### Secrets ###
+/src/main/resources/application-secrets.yaml

@@ -1,4 +1,4 @@
-package team.polytech.online.diffusion.service;
+package team.polytech.online.diffusion.service.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.repository.UserRepository;
+import team.polytech.online.diffusion.service.auth.CustomUserDetailsService;
 
 @Service
 public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {

@@ -1,4 +1,4 @@
-package team.polytech.online.diffusion.service;
+package team.polytech.online.diffusion.service.auth;
 
 import java.util.Date;
 import java.util.Objects;

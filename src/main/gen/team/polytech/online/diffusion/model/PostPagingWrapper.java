@@ -26,7 +26,7 @@ import jakarta.annotation.Generated;
  */
 
 @Schema(name = "PostPagingWrapper", description = "Оболочка для пагинации")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-28T21:58:38.197996353+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-11-26T02:48:27.820427+03:00[Europe/Moscow]")
 public class PostPagingWrapper implements Serializable {
 
   private static final long serialVersionUID = 1L;

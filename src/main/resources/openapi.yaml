@@ -528,20 +528,21 @@ paths:
       x-accepts: application/json
       x-tags:
       - tag: Generator
-    trace:
+  /api/v1/generation_status:
+    get:
       description: ""
-      operationId: trace-generator
+      operationId: generation-status
       parameters:
-      - description: "Токен, по которому можно узнать об статусе генерируемого изо\
+        - description: "Токен, по которому можно узнать об статусе генерируемого изо\
           бражения"
-        explode: true
-        in: query
-        name: generationToken
-        required: true
-        schema:
-          example: "123"
-          type: string
-        style: form
+          explode: true
+          in: query
+          name: generationToken
+          required: true
+          schema:
+            example: "123"
+            type: string
+          style: form
       responses:
         "201":
           content:
@@ -561,13 +562,13 @@ paths:
           description: во время генерации изображения случилась ошибка и оно было
             потеряно безвозвратно :(
       security:
-      - JWTAuth: []
+        - JWTAuth: [ ]
       summary: Получаем сделанное изображение в цикле
       tags:
-      - Generator
+        - Generator
       x-accepts: application/json
       x-tags:
-      - tag: Generator
+        - tag: Generator
   /api/v1/profile:
     get:
       description: ""
