@@ -38,10 +38,10 @@ public class GeneratorApiController implements GeneratorApi {
     }
 
     @Override
-    public ResponseEntity<String> postGenerator(String prompt, String antiPrompt, String modelName, Optional<Long> seed) {
-        long generationSeed = seed.orElse(random.nextLong());
+    public ResponseEntity<String> postGenerator(String prompt, String antiPrompt, String modelName, Optional<Integer> seed) {
+        int generationSeed = seed.orElse(random.nextInt());
         try {
-            return new ResponseEntity<>(generatorService.generate(prompt, antiPrompt, modelName, generationSeed).getUUID(), HttpStatus.OK);
+            return new ResponseEntity<>(generatorService.generate(prompt, antiPrompt, modelName, generationSeed).getUUID(), HttpStatus.ACCEPTED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

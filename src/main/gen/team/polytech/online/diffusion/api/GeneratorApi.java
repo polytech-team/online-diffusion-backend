@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-11-26T02:48:27.820427+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-11-26T16:55:10.455043+03:00[Europe/Moscow]")
 @Validated
 @Tag(name = "Generator", description = "Методы, связанные с генерацией изображений")
 public interface GeneratorApi {
@@ -173,7 +173,7 @@ public interface GeneratorApi {
         @NotNull @Parameter(name = "prompt", description = "prompt для создания фото", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "prompt", required = true) String prompt,
         @NotNull @Parameter(name = "anti-prompt", description = "anti-prompt для создания фото", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "anti-prompt", required = true) String antiPrompt,
         @NotNull @Parameter(name = "modelName", description = "Название модели, которая будет использоваться для генерации", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "modelName", required = true) String modelName,
-        @Parameter(name = "seed", description = "Seed для генерации нейросети. Оставить пустым для случайного", in = ParameterIn.QUERY) @Valid @RequestParam(value = "seed", required = false) Optional<Long> seed
+        @Parameter(name = "seed", description = "Seed для генерации нейросети. Оставить пустым для случайного", in = ParameterIn.QUERY) @Valid @RequestParam(value = "seed", required = false) Optional<Integer> seed
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 

@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface GeneratorService {
 
-    GenerationStatus generate(String prompt, String antiPrompt, String modelName, long seed);
+    GenerationStatus generate(String prompt, String antiPrompt, String modelName, int seed);
 
     Optional<GenerationStatus> getGenerationStatus(String UUID);
 

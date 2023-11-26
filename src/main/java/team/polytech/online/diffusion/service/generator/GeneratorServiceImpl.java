@@ -31,11 +31,11 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     @Override
-    public GenerationStatus generate(String prompt, String antiPrompt, String modelName, long seed) {
+    public GenerationStatus generate(String prompt, String antiPrompt, String modelName, int seed) {
         StableDiffusionProcessingTxt2Img request = new StableDiffusionProcessingTxt2Img();
         request.prompt(prompt);
         request.negativePrompt(antiPrompt);
-        request.seed((int) seed);
+        request.seed(seed);
         request.height(128);
         request.width(128);
         request.steps(5);
