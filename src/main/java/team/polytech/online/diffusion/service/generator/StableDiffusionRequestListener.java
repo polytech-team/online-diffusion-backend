@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import team.polytech.automatic.webui.api.DefaultApi;
@@ -21,6 +22,13 @@ import team.polytech.online.diffusion.repository.GenerationStatusRepository;
 @Component
 public class StableDiffusionRequestListener {
     private static final Logger LOG = LoggerFactory.getLogger(StableDiffusionRequestListener.class);
+
+    @Value("${stable-diffusion.mock.enabled}")
+    private boolean mockEnabled;
+    @Value("${stable-diffusion.mock.time-ms}")
+    private long mockTimeMs;
+    @Value("${stable-diffusion.mock.image}")
+    private String base64MockImage;
 
     private final DefaultApi automaticUiApi;
     private final GenerationStatusRepository generationRepository;
@@ -39,6 +47,19 @@ public class StableDiffusionRequestListener {
     public void processGenerationRequest(SDTxt2ImgRequest request) {
         generationRepository.save(new GenerationStatus(request.getUUID(), GenerationStatus.Stage.IN_PROGRESS));
         TextToImageResponse response;
+
+        if (mockEnabled) {
+            LOG.info("Using mock for dummy image, no actual image present. Sleeping for " + mockTimeMs);
+            try {
+                Thread.sleep(mockTimeMs);
+            } catch (InterruptedException e) {
+                LOG.warn("Sleeping interrupted");
+                throw new RuntimeException(e);
+            }
+            imageService.imageUploadTask(request, base64MockImage);
+            return;
+        }
+
         try {
             Options options = automaticUiApi.getConfigSdapiV1OptionsGet();
 
