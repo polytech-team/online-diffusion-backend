@@ -1,6 +1,7 @@
 package team.polytech.online.diffusion.service.generator;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import team.polytech.automatic.webui.api.DefaultApi;
@@ -20,6 +21,8 @@ import java.util.UUID;
 @Service
 public class GeneratorServiceImpl implements GeneratorService {
 
+    @Value("${stable-diffusion.mock.enabled}")
+    private boolean mockEnabled;
     private final DefaultApi automaticUiApi;
     private final StableDiffusionRequestSender sender;
     private final GenerationStatusRepository generationRepository;
@@ -67,6 +70,9 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     @Override
     public List<String> getModels() {
+        if (mockEnabled) {
+            return List.of("anime-diffusion", "mega-models");
+        }
         return automaticUiApi.getSdModelsSdapiV1SdModelsGet().stream().map(SDModelItem::getModelName).toList();
     }
 }
