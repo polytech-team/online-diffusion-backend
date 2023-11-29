@@ -1,6 +1,8 @@
 package team.polytech.online.diffusion.service.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,15 +21,18 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JavaMailSender mailSender;
 
     @Autowired
     public AuthServiceImpl(AuthenticationManager authenticationManager,
                            JwtService jwtService,
-                           UserRepository userRepository, PasswordEncoder passwordEncoder) {
+                           UserRepository userRepository, PasswordEncoder passwordEncoder,
+                           JavaMailSender sender) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.mailSender = sender;
     }
 
     @Override
@@ -50,6 +55,21 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public String recovery(String email) {
+        if (email == null || email.isEmpty()) {
+            return null;
+        }
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            return null;
+        }
+
+        sendRecoveryMessage(user.get());
+
+        return "OK";
+    }
+
+    @Override
     public AuthInfo refresh(String refreshToken) {
         Long userId = jwtService.getUserIdFromRefresh(refreshToken);
         if (userId != null) {
@@ -57,5 +77,21 @@ public class AuthServiceImpl implements AuthService {
             return user.map(jwtService::generateAuthInfo).orElse(null);
         }
         return null;
+    }
+
+    private void sendRecoveryMessage(User user) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("noreply@imaginarium.com");
+        message.setTo(user.getEmail());
+        message.setSubject("Imaginarium recovery token");
+        message.setText(String.format(
+                """
+                Hey %s!
+                Looks like you forgot your password :(
+                Here is the recovery code: %s
+                If it wasn't you requesting password reset, you may just ignore this message
+                This message is send automatically, so there is no use trying to reply
+                """, user.getUsername(), "123456"));
+        mailSender.send(message);
     }
 }
