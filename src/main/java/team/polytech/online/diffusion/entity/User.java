@@ -1,17 +1,12 @@
 package team.polytech.online.diffusion.entity;
 
-import java.util.Collection;
-import java.util.Collections;
-
+import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Table(name = "_user")
@@ -23,6 +18,8 @@ public class User implements UserDetails {
     private String username;
     private String email;
     private String password;
+    @OneToMany(mappedBy = "user")
+    private List<ImageEntity> generatedImages;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -11,6 +11,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import team.polytech.online.diffusion.entity.GenerationStatus;
 import team.polytech.online.diffusion.model.Image;
 import team.polytech.online.diffusion.service.generator.GeneratorService;
+import team.polytech.online.diffusion.service.image.ImageService;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,13 +24,16 @@ public class GeneratorApiController implements GeneratorApi {
 
     private final NativeWebRequest request;
     private final GeneratorService generatorService;
+    private final ImageService imageService;
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
 
     @Autowired
     public GeneratorApiController(NativeWebRequest request,
-                                  GeneratorService generatorService) {
+                                  GeneratorService generatorService,
+                                  ImageService imageService) {
         this.request = request;
         this.generatorService = generatorService;
+        this.imageService = imageService;
     }
 
     @Override
@@ -41,7 +45,11 @@ public class GeneratorApiController implements GeneratorApi {
     public ResponseEntity<String> postGenerator(String prompt, String antiPrompt, String modelName, Optional<Integer> seed) {
         int generationSeed = seed.orElse(random.nextInt());
         try {
-            return new ResponseEntity<>(generatorService.generate(prompt, antiPrompt, modelName, generationSeed).getUUID(), HttpStatus.ACCEPTED);
+            GenerationStatus status = generatorService.generate(prompt, antiPrompt, modelName, generationSeed);
+            if (status == null) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return new ResponseEntity<>(status.getUUID(), HttpStatus.ACCEPTED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -64,7 +72,13 @@ public class GeneratorApiController implements GeneratorApi {
     private ResponseEntity<Image> responseFromStatus(GenerationStatus status) {
         return switch (status.getStage()) {
             case NOT_STARTED, IN_PROGRESS -> new ResponseEntity<>(HttpStatus.ACCEPTED);
-            case SUCCESSFUL -> new ResponseEntity<>(HttpStatus.CREATED);
+            case SUCCESSFUL -> {
+                Optional<Image> image = imageService.getImageById(status.getImageId());
+                if (image.isEmpty()) {
+                    yield new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                yield new ResponseEntity<>(image.get(), HttpStatus.CREATED);
+            }
             case FAILED -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         };
     }

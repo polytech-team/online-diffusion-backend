@@ -55,7 +55,7 @@ services:
       - '5672:5672'
       - '15672:15672'
   online-diffusion:
-    image: pobedos/online-diffusion-backend:v1.0.4
+    image: pobedos/online-diffusion-backend:v1.0.5
     restart: always
     ports:
       - '8080:8080'

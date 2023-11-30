@@ -60,6 +60,7 @@
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
 
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <enumUnknownDefaultCase>true</enumUnknownDefaultCase>
                                 <performBeanValidation>true</performBeanValidation>
                                 <serializableModel>true</serializableModel>
@@ -239,6 +240,12 @@
             <groupId>com.github.polytech-team</groupId>
             <artifactId>spring-automatic-api-client</artifactId>
             <version>master-c36d9a2a4c-1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.polytech-team</groupId>
+            <artifactId>spring-imgur-api-client</artifactId>
+            <version>main-360854312b-1</version>
         </dependency>
     </dependencies>
 </project>

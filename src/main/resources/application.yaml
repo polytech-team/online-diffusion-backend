@@ -1,3 +1,4 @@
+spring.profiles.include: secrets, photomock
 server:
   port: 8080
 spring:
@@ -28,3 +29,7 @@ spring:
     password: rmpassword
     host: localhost
     port: 5672
+stable-diffusion:
+  mock:
+    enabled: true
+    time-ms: 5000
