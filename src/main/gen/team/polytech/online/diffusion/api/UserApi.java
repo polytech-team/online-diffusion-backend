@@ -6,6 +6,7 @@
 package team.polytech.online.diffusion.api;
 
 import team.polytech.online.diffusion.model.GalleryPagingWrapper;
+import team.polytech.online.diffusion.model.ProfileInfo;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-11-30T02:52:21.618441+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Validated
 @Tag(name = "User", description = "Методы, связанные с получением пользовательских данных")
 public interface UserApi {
@@ -54,7 +55,9 @@ public interface UserApi {
         description = "",
         tags = { "User" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "все хорошо, информация по юзеру получена"),
+            @ApiResponse(responseCode = "200", description = "все хорошо, информация по юзеру получена", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileInfo.class))
+            }),
             @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
@@ -63,11 +66,21 @@ public interface UserApi {
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/api/v1/profile"
+        value = "/api/v1/profile",
+        produces = { "application/json" }
     )
-    default ResponseEntity<Void> getProfile(
+    default ResponseEntity<ProfileInfo> getProfile(
         
     ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"avatarUrl\" : \"avatarUrl\", \"generated\" : 0, \"email\" : \"email\", \"username\" : \"username\", \"gallery_images\" : 6, \"posted\" : 1 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import java.math.BigDecimal;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -22,12 +21,12 @@ import jakarta.annotation.Generated;
  */
 
 @Schema(name = "Image", description = "Объект с информацией об фотографии")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-11-30T02:52:21.618441+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 public class Image implements Serializable, Post {
 
   private static final long serialVersionUID = 1L;
 
-  private BigDecimal photoId;
+  private Long photoId;
 
   private String photoUrl;
 
@@ -39,7 +38,7 @@ public class Image implements Serializable, Post {
 
   private String antiPrompt;
 
-  private String seed;
+  private Integer seed;
 
   private String model;
 
@@ -50,7 +49,7 @@ public class Image implements Serializable, Post {
   /**
    * Constructor with only required parameters
    */
-  public Image(BigDecimal photoId, String photoUrl, String authorName, String authorAvatarUrl, String prompt, String antiPrompt, String seed, String model) {
+  public Image(Long photoId, String photoUrl, String authorName, String authorAvatarUrl, String prompt, String antiPrompt, Integer seed, String model) {
     this.photoId = photoId;
     this.photoUrl = photoUrl;
     this.authorName = authorName;
@@ -61,7 +60,7 @@ public class Image implements Serializable, Post {
     this.model = model;
   }
 
-  public Image photoId(BigDecimal photoId) {
+  public Image photoId(Long photoId) {
     this.photoId = photoId;
     return this;
   }
@@ -70,14 +69,14 @@ public class Image implements Serializable, Post {
    * Id фотографии
    * @return photoId
   */
-  @NotNull @Valid 
+  @NotNull 
   @Schema(name = "photoId", description = "Id фотографии", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("photoId")
-  public BigDecimal getPhotoId() {
+  public Long getPhotoId() {
     return photoId;
   }
 
-  public void setPhotoId(BigDecimal photoId) {
+  public void setPhotoId(Long photoId) {
     this.photoId = photoId;
   }
 
@@ -181,7 +180,7 @@ public class Image implements Serializable, Post {
     this.antiPrompt = antiPrompt;
   }
 
-  public Image seed(String seed) {
+  public Image seed(Integer seed) {
     this.seed = seed;
     return this;
   }
@@ -193,11 +192,11 @@ public class Image implements Serializable, Post {
   @NotNull 
   @Schema(name = "seed", description = "seed, использовшийся для создания изображения", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("seed")
-  public String getSeed() {
+  public Integer getSeed() {
     return seed;
   }
 
-  public void setSeed(String seed) {
+  public void setSeed(Integer seed) {
     this.seed = seed;
   }
 

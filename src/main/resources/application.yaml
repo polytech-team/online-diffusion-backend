@@ -1,6 +1,8 @@
 spring.profiles.include: secrets, photomock
 server:
   port: 8080
+api:
+  url: localhost:7860
 spring:
   jackson:
     date-format: team.polytech.online.diffusion.RFC3339DateFormat

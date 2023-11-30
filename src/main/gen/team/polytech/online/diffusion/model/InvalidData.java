@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * показывает какие именно поля были некорректными
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-11-30T02:52:21.618441+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 public enum InvalidData {
   
   EMAIL("email"),

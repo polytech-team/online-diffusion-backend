@@ -24,7 +24,7 @@ services:
     image: sd-auto:68
     hostname: auto
     environment:
-      - CLI_ARGS=--allow-code --lowvram --xformers --enable-insecure-extension-access --api
+      - CLI_ARGS=--allow-code --medvram --xformers --enable-insecure-extension-access --api
 
   auto-cpu:
     <<: *automatic
@@ -56,8 +56,3 @@ services:
     ports:
       - '5672:5672'
       - '15672:15672'
-  online-diffusion:
-    image: pobedos/online-diffusion-backend:v1.0.5
-    restart: always
-    ports:
-      - '8080:8080'

@@ -21,7 +21,7 @@ import jakarta.annotation.Generated;
  */
 
 @Schema(name = "AuthInfo", description = "Ответная информация, содержащая JWT токены пользователя")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-11-30T02:52:21.618441+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 public class AuthInfo implements Serializable {
 
   private static final long serialVersionUID = 1L;
