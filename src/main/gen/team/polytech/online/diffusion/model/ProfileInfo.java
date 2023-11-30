@@ -21,7 +21,7 @@ import jakarta.annotation.Generated;
  */
 
 @Schema(name = "ProfileInfo", description = "Информация по юзеру")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-11-26T16:55:10.455043+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-11-30T02:52:21.618441+03:00[Europe/Moscow]")
 public class ProfileInfo implements Serializable {
 
   private static final long serialVersionUID = 1L;

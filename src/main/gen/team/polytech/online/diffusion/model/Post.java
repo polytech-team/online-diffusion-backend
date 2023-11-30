@@ -21,6 +21,6 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-11-26T16:55:10.455043+03:00[Europe/Moscow]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-11-30T02:52:21.618441+03:00[Europe/Moscow]")
 public interface Post extends Serializable {
 }

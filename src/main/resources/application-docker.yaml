@@ -1,12 +1,14 @@
 server:
   port: 8080
+api:
+  url: auto-cpu:7860
 spring:
   jackson:
     date-format: team.polytech.online.diffusion.RFC3339DateFormat
     serialization:
       write-dates-as-timestamps: false
   datasource:
-    url: jdbc:postgresql://localhost:3306/mydatabase
+    url: jdbc:postgresql://postgres:5432/mydatabase
     username: myuser
     password: secret
     driver-class-name: org.postgresql.Driver
@@ -21,10 +23,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
   rabbitmq:
     username: rmuser
     password: rmpassword
-    host: localhost
+    host: rabbitmq
     port: 5672

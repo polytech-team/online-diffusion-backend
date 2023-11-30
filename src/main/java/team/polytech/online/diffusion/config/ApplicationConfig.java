@@ -1,6 +1,7 @@
 package team.polytech.online.diffusion.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,8 @@ import team.polytech.automatic.webui.invoker.ApiClient;
 @Configuration
 public class ApplicationConfig {
     private final UserDetailsService userDetailsService;
+    @Value("${api.url}")
+    private String stableDiffusionApiUrl;
 
     @Autowired
     public ApplicationConfig(UserDetailsService userDetailsService) {
@@ -43,7 +46,8 @@ public class ApplicationConfig {
     @Bean
     ApiClient getClient() {
         ApiClient client = new ApiClient();
-        client.setBasePath("http://127.0.0.1:7860");
+        client.setBasePath(stableDiffusionApiUrl);
+        System.out.println(stableDiffusionApiUrl);
         return client;
     }
 }
