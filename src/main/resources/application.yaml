@@ -31,6 +31,10 @@ spring:
     password: rmpassword
     host: localhost
     port: 5672
+  docker:
+    compose:
+      enabled: true
+      file: docker-compose-local.yml
 stable-diffusion:
   mock:
     enabled: true
