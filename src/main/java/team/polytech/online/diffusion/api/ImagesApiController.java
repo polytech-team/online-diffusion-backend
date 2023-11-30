@@ -80,14 +80,14 @@ public class ImagesApiController implements ImagesApi {
 
         switch (result) {
             case SUCCESS:
-                return ResponseEntity.status(HttpStatus.CREATED).build();
+                return new ResponseEntity<>(HttpStatus.CREATED);
             case IMAGE_NOT_FOUND:
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             case USER_NOT_FOUND:
             case NOT_OWNED:
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             case ALREADY_PUBLISHED:
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
             default:
                 return ResponseEntity.badRequest().build();
         }
