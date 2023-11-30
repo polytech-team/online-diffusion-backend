@@ -13,6 +13,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import java.util.Optional;
 
 import jakarta.annotation.Generated;
+import team.polytech.online.diffusion.model.ProfileInfo;
 import team.polytech.online.diffusion.service.user.UserService;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T02:19:33.552470+03:00[Europe/Moscow]")
@@ -54,6 +55,17 @@ public class UserApiController implements UserApi {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public ResponseEntity<ProfileInfo> getProfile(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<ProfileInfo> profileInfo = userService.getProfileInfo(username);
+        if (profileInfo.isPresent()) {
+            return new ResponseEntity<>(profileInfo.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 }
