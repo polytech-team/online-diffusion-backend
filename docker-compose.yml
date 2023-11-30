@@ -22,6 +22,7 @@ services:
     profiles: [ "auto" ]
     build: ./stable-diffusion-webui-docker/service
     image: sd-auto:68
+    hostname: auto
     environment:
       - CLI_ARGS=--allow-code --medvram --xformers --enable-insecure-extension-access --api
 
@@ -29,6 +30,7 @@ services:
     <<: *automatic
     profiles: [ "auto-cpu" ]
     deploy: { }
+    hostname: auto
     environment:
       - CLI_ARGS=--no-half --precision full --allow-code --enable-insecure-extension-access --api
 
