@@ -58,14 +58,11 @@ public class UserApiController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<ProfileInfo> getProfile(){
+    public ResponseEntity<ProfileInfo> getProfile() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<ProfileInfo> profileInfo = userService.getProfileInfo(username);
-        if (profileInfo.isPresent()) {
-            return new ResponseEntity<>(profileInfo.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return profileInfo.map(info -> new ResponseEntity<>(info, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 }

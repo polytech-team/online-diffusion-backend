@@ -59,6 +59,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return true;
     }
+
     @Override
     public Optional<ProfileInfo> getProfileInfo(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
@@ -77,11 +78,16 @@ public class UserServiceImpl implements UserService {
                 user.getGalleryImages(),
                 user.getPosted());
     }
+
     @Override
-    public boolean setAvatar(String username,Long photoId){
+    public boolean setAvatar(String username, Long photoId) {
         Optional<User> userOptional = userRepository.findByUsername(username);
         Optional<ImageEntity> imageOptional = imageRepository.findById(photoId);
-        if (userOptional.isEmpty()||imageOptional.isEmpty()) {
+        if (userOptional.isEmpty() || imageOptional.isEmpty()) {
+            return false;
+        }
+        ImageEntity entity = imageOptional.get();
+        if (entity.getPublicity() != ImageEntity.Publicity.PUBLIC && !entity.getUser().getUsername().equals(username)) {
             return false;
         }
         User user = userOptional.get();

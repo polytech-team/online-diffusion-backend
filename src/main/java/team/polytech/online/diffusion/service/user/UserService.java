@@ -14,6 +14,6 @@ public interface UserService {
 
     Optional<ProfileInfo> getProfileInfo(String username);
 
-    boolean setAvatar(String username,Long photoId);
+    boolean setAvatar(String username, Long photoId);
 
 }

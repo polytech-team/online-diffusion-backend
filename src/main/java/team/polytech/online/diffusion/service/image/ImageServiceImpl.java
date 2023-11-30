@@ -23,15 +23,6 @@ public class ImageServiceImpl implements ImageService {
         this.userRepository = userRepository;
     }
 
-    public enum PublishResult {
-        SUCCESS,
-        IMAGE_NOT_FOUND,
-        USER_NOT_FOUND,
-        NOT_OWNED,
-        ALREADY_IN_GALLERY,
-        ALREADY_PUBLISHED
-    }
-
     @Override
     public Optional<Image> getImageById(long imageId) {
         Optional<ImageEntity> entityOptional = imageRepository.findById(imageId);
@@ -107,5 +98,14 @@ public class ImageServiceImpl implements ImageService {
         image.setPublicity(ImageEntity.Publicity.PUBLIC);
         imageRepository.save(image);
         return PublishResult.SUCCESS;
+    }
+
+    public enum PublishResult {
+        SUCCESS,
+        IMAGE_NOT_FOUND,
+        USER_NOT_FOUND,
+        NOT_OWNED,
+        ALREADY_IN_GALLERY,
+        ALREADY_PUBLISHED
     }
 }

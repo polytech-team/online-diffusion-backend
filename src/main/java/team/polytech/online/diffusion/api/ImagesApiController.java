@@ -44,14 +44,15 @@ public class ImagesApiController implements ImagesApi {
     }
 
     @Override
-    public ResponseEntity<Void> makeAvatar(Long photoId){
+    public ResponseEntity<Void> makeAvatar(Long photoId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean setAvatar = userService.setAvatar(username,photoId);
+        boolean setAvatar = userService.setAvatar(username, photoId);
         if (setAvatar) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
     @Override
     public ResponseEntity<Void> putImage(Long photoId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -71,8 +72,9 @@ public class ImagesApiController implements ImagesApi {
                 return ResponseEntity.badRequest().build();
         }
     }
+
     @Override
-    public ResponseEntity<Void> postImage( Long photoId) {
+    public ResponseEntity<Void> postImage(Long photoId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         ImageServiceImpl.PublishResult result = service.publishImage(username, photoId);
 
