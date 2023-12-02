@@ -69,9 +69,18 @@ public class AuthApiController implements AuthApi {
         AuthServiceImpl.RecoveryResponse response = authService.confirmation(recoveryToken, code);
         return switch (response) {
             case SUCCESS -> new ResponseEntity<>(HttpStatus.OK);
-            case WRONG_CODE -> new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            case FAILURE -> new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             case INVALID_TOKEN -> new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            case INTERNAL_ERROR -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        };
+    }
+
+    @Override
+    public ResponseEntity<Void> newPassword(String password, String recoveryToken) {
+        AuthServiceImpl.RecoveryResponse response = authService.setNewPassword(recoveryToken, password);
+        return switch (response) {
+            case SUCCESS -> new ResponseEntity<>(HttpStatus.OK);
+            case FAILURE -> new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            case INVALID_TOKEN -> new ResponseEntity<>(HttpStatus.NOT_FOUND);
         };
     }
 

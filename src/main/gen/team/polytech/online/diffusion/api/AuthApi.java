@@ -133,7 +133,7 @@ public interface AuthApi {
      * PUT /api/v1/auth/new-password : Ввод нового пароля
      * 
      *
-     * @param code Код для сброса пароля с электронной почты (required)
+     * @param password Новый пароль, выбранный пользователем (required)
      * @param recoveryToken Токен, назначаемый сессии сброса пароля (required)
      * @return токен активирован и новый пароль успешно принят (status code 200)
      *         or такой токен есть, однако он еще не был активирован присыланием правильного кода в методе Confirm_Password_Code (status code 400)
@@ -158,7 +158,7 @@ public interface AuthApi {
         value = "/api/v1/auth/new-password"
     )
     default ResponseEntity<Void> newPassword(
-        @NotNull @Parameter(name = "code", description = "Код для сброса пароля с электронной почты", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "code", required = true) Integer code,
+        @NotNull @Parameter(name = "password", description = "Новый пароль, выбранный пользователем", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "password", required = true) String password,
         @NotNull @Parameter(name = "recoveryToken", description = "Токен, назначаемый сессии сброса пароля", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "recoveryToken", required = true) String recoveryToken
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

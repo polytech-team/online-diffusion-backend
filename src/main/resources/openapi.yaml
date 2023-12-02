@@ -245,15 +245,14 @@ paths:
       description: ""
       operationId: new-password
       parameters:
-      - description: Код для сброса пароля с электронной почты
+      - description: Новый пароль, выбранный пользователем
         explode: true
         in: query
-        name: code
+        name: password
         required: true
         schema:
-          example: 123456
-          format: int32
-          type: integer
+          example: querty123
+          type: string
         style: form
       - description: "Токен, назначаемый сессии сброса пароля"
         explode: true

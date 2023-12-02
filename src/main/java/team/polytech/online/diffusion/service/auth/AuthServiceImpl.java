@@ -86,30 +86,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public RecoveryResponse confirmation(String token, Integer code) {
-        if (token == null || token.isEmpty() || code == null) {
+        if (code == null) {
             return RecoveryResponse.INVALID_TOKEN;
         }
 
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user = userRepository.findByEmail(name);
+        RecoveryToken recoveryToken = getToken(token);
 
-        if (user.isEmpty()) {
-            return RecoveryResponse.INTERNAL_ERROR;
-        }
-
-        Optional<RecoveryToken> recoveryTokenOpt = recoveryRepository.findById(token);
-
-        if (recoveryTokenOpt.isEmpty()) {
-            return RecoveryResponse.INVALID_TOKEN;
-        }
-
-        RecoveryToken recoveryToken = recoveryTokenOpt.get();
-
-        if (!Objects.equals(recoveryToken.getUserId(), user.get().getId())) {
-            return RecoveryResponse.INVALID_TOKEN;
-        }
-
-        if (recoveryToken.getStage() == RecoveryToken.Stage.USED) {
+        if (recoveryToken == null) {
             return RecoveryResponse.INVALID_TOKEN;
         }
 
@@ -131,7 +114,70 @@ public class AuthServiceImpl implements AuthService {
 
         recoveryRepository.save(recoveryToken);
 
-        return RecoveryResponse.WRONG_CODE;
+        return RecoveryResponse.FAILURE;
+    }
+
+    @Override
+    public RecoveryResponse setNewPassword(String token, String password) {
+        if (password == null) {
+            return RecoveryResponse.INVALID_TOKEN;
+        }
+
+        RecoveryToken recoveryToken = getToken(token);
+
+        if (recoveryToken == null) {
+            return RecoveryResponse.INVALID_TOKEN;
+        }
+
+        if (recoveryToken.getStage() == RecoveryToken.Stage.NOT_CONFIRMED) {
+            return RecoveryResponse.FAILURE;
+        }
+
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> userOpt = userRepository.findByEmail(name);
+        if (userOpt.isEmpty()) {
+            return RecoveryResponse.INVALID_TOKEN;
+        }
+
+        User user = userOpt.get();
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+
+        recoveryToken.setStage(RecoveryToken.Stage.USED);
+        recoveryRepository.save(recoveryToken);
+
+        return RecoveryResponse.SUCCESS;
+    }
+
+    private RecoveryToken getToken(String token) {
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
+
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> user = userRepository.findByEmail(name);
+
+        if (user.isEmpty()) {
+            return null;
+        }
+
+        Optional<RecoveryToken> recoveryTokenOpt = recoveryRepository.findById(token);
+
+        if (recoveryTokenOpt.isEmpty()) {
+            return null;
+        }
+
+        RecoveryToken recoveryToken = recoveryTokenOpt.get();
+
+        if (!Objects.equals(recoveryToken.getUserId(), user.get().getId())) {
+            return null;
+        }
+
+        if (recoveryToken.getStage() == RecoveryToken.Stage.USED) {
+            return null;
+        }
+
+        return recoveryToken;
     }
 
     @Override
@@ -161,6 +207,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public enum RecoveryResponse {
-        SUCCESS, WRONG_CODE, INVALID_TOKEN, INTERNAL_ERROR
+        SUCCESS, FAILURE, INVALID_TOKEN
     }
 }
