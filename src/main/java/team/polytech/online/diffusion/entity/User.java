@@ -18,6 +18,7 @@ public class User implements UserDetails {
     private String username;
     private String email;
     private String password;
+    private Status status;
     @OneToMany(mappedBy = "user")
     private List<ImageEntity> generatedImages;
 
@@ -78,5 +79,17 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public enum Status {
+        NOT_CONFIRMED, CONFIRMED
     }
 }

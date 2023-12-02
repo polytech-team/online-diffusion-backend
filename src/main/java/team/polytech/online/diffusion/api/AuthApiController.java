@@ -7,7 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
-import team.polytech.online.diffusion.entity.User;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 import team.polytech.online.diffusion.model.AuthInfo;
 import team.polytech.online.diffusion.service.auth.AuthService;
 import team.polytech.online.diffusion.service.auth.AuthServiceImpl;
@@ -21,12 +22,22 @@ public class AuthApiController implements AuthApi {
 
     private final NativeWebRequest request;
     private final AuthService authService;
+    private final TemplateEngine htmlTemplateEngine;
 
     @Autowired
     public AuthApiController(NativeWebRequest request,
-                             AuthService authService) {
+                             AuthService authService,
+                             TemplateEngine htmlTemplateEngine) {
         this.request = request;
         this.authService = authService;
+        this.htmlTemplateEngine = htmlTemplateEngine;
+    }
+
+    @Override
+    public ResponseEntity<String> emailConfirmation(String uuid) {
+        return authService.confirmRegistration(uuid) ?
+                new ResponseEntity<>(htmlTemplateEngine.process("auth/success.html", new Context()), HttpStatus.OK)
+                : new ResponseEntity<>(htmlTemplateEngine.process("auth/failure.html", new Context()), HttpStatus.NOT_FOUND);
     }
 
     @Override
@@ -51,8 +62,8 @@ public class AuthApiController implements AuthApi {
     @Override
     public ResponseEntity<Void> register(String email, String username, String password) {
         //TODO Также адекватное отправление разных кодов ответа нужно
-        User user = authService.register(email, username, password);
-        if (user == null) {
+        String uuid = authService.register(email, username, password);
+        if (uuid == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);

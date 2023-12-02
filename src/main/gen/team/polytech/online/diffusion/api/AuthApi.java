@@ -83,6 +83,44 @@ public interface AuthApi {
 
 
     /**
+     * PUT /auth/confirmation/{uuid} : Подтверждение почты по ссылке
+     * 
+     *
+     * @param uuid uuid токена регистрации, ссылка присылается на почту (required)
+     * @return Регистрация прошла успешно (status code 200)
+     *         or Такого uuid для регистрации не обнаружено (status code 404)
+     */
+    @Operation(
+        operationId = "emailConfirmation",
+        summary = "Подтверждение почты по ссылке",
+        description = "",
+        tags = { "Auth" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Регистрация прошла успешно", content = {
+                @Content(mediaType = "text/html", schema = @Schema(implementation = String.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "Такого uuid для регистрации не обнаружено", content = {
+                @Content(mediaType = "text/html", schema = @Schema(implementation = String.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "JWTAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.PUT,
+        value = "/auth/confirmation/{uuid}",
+        produces = { "text/html" }
+    )
+    default ResponseEntity<String> emailConfirmation(
+        @Parameter(name = "uuid", description = "uuid токена регистрации, ссылка присылается на почту", required = true, in = ParameterIn.PATH) @PathVariable("uuid") String uuid
+    ) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+
+    /**
      * GET /api/v1/auth/login : Авторизация
      * 
      *
