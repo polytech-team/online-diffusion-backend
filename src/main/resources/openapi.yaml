@@ -38,7 +38,7 @@ tags:
   name: User
 paths:
   /auth/confirmation/{uuid}:
-    put:
+    get:
       description: ""
       operationId: email-confirmation
       parameters:

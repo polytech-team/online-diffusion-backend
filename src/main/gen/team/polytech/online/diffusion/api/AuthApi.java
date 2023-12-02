@@ -83,7 +83,7 @@ public interface AuthApi {
 
 
     /**
-     * PUT /auth/confirmation/{uuid} : Подтверждение почты по ссылке
+     * GET /auth/confirmation/{uuid} : Подтверждение почты по ссылке
      * 
      *
      * @param uuid uuid токена регистрации, ссылка присылается на почту (required)
@@ -108,7 +108,7 @@ public interface AuthApi {
         }
     )
     @RequestMapping(
-        method = RequestMethod.PUT,
+        method = RequestMethod.GET,
         value = "/auth/confirmation/{uuid}",
         produces = { "text/html" }
     )

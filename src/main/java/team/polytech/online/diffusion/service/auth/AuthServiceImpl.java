@@ -52,6 +52,9 @@ public class AuthServiceImpl implements AuthService {
     public AuthInfo login(String email, String password) {
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         User user = (User) auth.getPrincipal();
+        if (user.getStatus() == User.Status.NOT_CONFIRMED) {
+            return null;
+        }
         return jwtService.generateAuthInfo(user);
     }
 
@@ -119,7 +122,7 @@ public class AuthServiceImpl implements AuthService {
         String uuid = UUID.randomUUID().toString();
         Optional<User> user = userRepository.findByEmail(email);
 
-        if (user.isPresent()) {
+        if (user.isPresent() && user.get().getStatus() == User.Status.CONFIRMED) {
             int recoveryCode = random.nextInt(100000, 1000000);
 
             sendRecoveryMessage(user.get(), recoveryCode);

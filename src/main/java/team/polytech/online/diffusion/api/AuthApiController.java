@@ -42,7 +42,6 @@ public class AuthApiController implements AuthApi {
 
     @Override
     public ResponseEntity<AuthInfo> login(String email, String password) {
-        //TODO Также адекватное отправление разных кодов ответа нужно
         AuthInfo info = authService.login(email, password);
         if (info == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
