@@ -8,31 +8,38 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import team.polytech.online.diffusion.entity.RecoveryToken;
 import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.model.AuthInfo;
+import team.polytech.online.diffusion.repository.RecoveryTokenRepository;
 import team.polytech.online.diffusion.repository.UserRepository;
 
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
+    private final ThreadLocalRandom random = ThreadLocalRandom.current();
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+    private final RecoveryTokenRepository recoveryRepository;
 
     @Autowired
     public AuthServiceImpl(AuthenticationManager authenticationManager,
                            JwtService jwtService,
-                           UserRepository userRepository, PasswordEncoder passwordEncoder,
-                           JavaMailSender sender) {
+                           UserRepository userRepository, RecoveryTokenRepository recoveryRepository,
+                           PasswordEncoder passwordEncoder, JavaMailSender sender) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.mailSender = sender;
+        this.recoveryRepository = recoveryRepository;
     }
 
     @Override
@@ -59,14 +66,19 @@ public class AuthServiceImpl implements AuthService {
         if (email == null || email.isEmpty()) {
             return null;
         }
+        String uuid = UUID.randomUUID().toString();
         Optional<User> user = userRepository.findByEmail(email);
-        if (user.isEmpty()) {
-            return null;
+
+        if (user.isPresent()) {
+            long recoveryCode = random.nextLong(100000, 1000000);
+
+            sendRecoveryMessage(user.get(), recoveryCode);
+
+            recoveryRepository.save(new RecoveryToken(uuid, recoveryCode, RecoveryToken.Stage.NOT_CONFIRMED));
         }
 
-        sendRecoveryMessage(user.get());
-
-        return "OK";
+        // Умалчиваем, что не нашли email, чтобы вор думал, что все норм
+        return uuid;
     }
 
     @Override
@@ -79,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
-    private void sendRecoveryMessage(User user) {
+    private void sendRecoveryMessage(User user, long code) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("noreply@imaginarium.com");
         message.setTo(user.getEmail());
@@ -88,10 +100,10 @@ public class AuthServiceImpl implements AuthService {
                 """
                 Hey %s!
                 Looks like you forgot your password :(
-                Here is the recovery code: %s
+                Here is the recovery code: %d
                 If it wasn't you requesting password reset, you may just ignore this message
                 This message is send automatically, so there is no use trying to reply
-                """, user.getUsername(), "123456"));
+                """, user.getUsername(), code));
         mailSender.send(message);
     }
 }

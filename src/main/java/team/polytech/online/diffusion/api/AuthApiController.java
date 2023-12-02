@@ -59,7 +59,8 @@ public class AuthApiController implements AuthApi {
 
     @Override
     public ResponseEntity<String> recovery(String email) {
-        return authService.recovery(email) == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(HttpStatus.OK);
+        String recoveryId = authService.recovery(email);
+        return recoveryId == null ? new ResponseEntity<>(HttpStatus.BAD_REQUEST) : new ResponseEntity<>(recoveryId, HttpStatus.OK);
     }
 
     @Override
