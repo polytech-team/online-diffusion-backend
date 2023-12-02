@@ -607,7 +607,10 @@ paths:
       parameters: []
       responses:
         "200":
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileInfo'
           description: "все хорошо, информация по юзеру получена"
         401:
           $ref: '#/components/responses/401'

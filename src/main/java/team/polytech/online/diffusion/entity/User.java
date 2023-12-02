@@ -18,6 +18,10 @@ public class User implements UserDetails {
     private String username;
     private String email;
     private String password;
+    private Long generated;
+    private Long galleryImages;
+    private Long posted;
+    private String avatarUrl;
     private Status status;
     @OneToMany(mappedBy = "user")
     private List<ImageEntity> generatedImages;
@@ -79,6 +83,38 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Long getGenerated() {
+        return generated;
+    }
+
+    public void setGenerated(Long generated) {
+        this.generated = generated;
+    }
+
+    public Long getGalleryImages() {
+        return galleryImages;
+    }
+
+    public void setGalleryImages(Long galleryImages) {
+        this.galleryImages = galleryImages;
+    }
+
+    public Long getPosted() {
+        return posted;
+    }
+
+    public void setPosted(Long posted) {
+        this.posted = posted;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public Status getStatus() {
