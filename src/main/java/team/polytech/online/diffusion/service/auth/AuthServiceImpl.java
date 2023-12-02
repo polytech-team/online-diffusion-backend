@@ -6,6 +6,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import team.polytech.online.diffusion.entity.RecoveryToken;
@@ -14,6 +15,7 @@ import team.polytech.online.diffusion.model.AuthInfo;
 import team.polytech.online.diffusion.repository.RecoveryTokenRepository;
 import team.polytech.online.diffusion.repository.UserRepository;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -70,15 +72,66 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isPresent()) {
-            long recoveryCode = random.nextLong(100000, 1000000);
+            int recoveryCode = random.nextInt(100000, 1000000);
 
             sendRecoveryMessage(user.get(), recoveryCode);
 
-            recoveryRepository.save(new RecoveryToken(uuid, recoveryCode, RecoveryToken.Stage.NOT_CONFIRMED));
+            recoveryRepository.save(new RecoveryToken(uuid, user.get().getId(),
+                    recoveryCode, RecoveryToken.Stage.NOT_CONFIRMED, 3));
         }
 
         // Умалчиваем, что не нашли email, чтобы вор думал, что все норм
         return uuid;
+    }
+
+    @Override
+    public RecoveryResponse confirmation(String token, Integer code) {
+        if (token == null || token.isEmpty() || code == null) {
+            return RecoveryResponse.INVALID_TOKEN;
+        }
+
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> user = userRepository.findByEmail(name);
+
+        if (user.isEmpty()) {
+            return RecoveryResponse.INTERNAL_ERROR;
+        }
+
+        Optional<RecoveryToken> recoveryTokenOpt = recoveryRepository.findById(token);
+
+        if (recoveryTokenOpt.isEmpty()) {
+            return RecoveryResponse.INVALID_TOKEN;
+        }
+
+        RecoveryToken recoveryToken = recoveryTokenOpt.get();
+
+        if (!Objects.equals(recoveryToken.getUserId(), user.get().getId())) {
+            return RecoveryResponse.INVALID_TOKEN;
+        }
+
+        if (recoveryToken.getStage() == RecoveryToken.Stage.USED) {
+            return RecoveryResponse.INVALID_TOKEN;
+        }
+
+        if (recoveryToken.getStage() == RecoveryToken.Stage.READY) {
+            return RecoveryResponse.SUCCESS;
+        }
+
+        if (code.equals(recoveryToken.getCode())) {
+            recoveryToken.setStage(RecoveryToken.Stage.READY);
+            recoveryRepository.save(recoveryToken);
+            return RecoveryResponse.SUCCESS;
+        }
+
+        recoveryToken.setTriesLeft(recoveryToken.getTriesLeft() - 1);
+
+        if (recoveryToken.getTriesLeft() <= 0) {
+            recoveryToken.setStage(RecoveryToken.Stage.USED);
+        }
+
+        recoveryRepository.save(recoveryToken);
+
+        return RecoveryResponse.WRONG_CODE;
     }
 
     @Override
@@ -105,5 +158,9 @@ public class AuthServiceImpl implements AuthService {
                 This message is send automatically, so there is no use trying to reply
                 """, user.getUsername(), code));
         mailSender.send(message);
+    }
+
+    public enum RecoveryResponse {
+        SUCCESS, WRONG_CODE, INVALID_TOKEN, INTERNAL_ERROR
     }
 }

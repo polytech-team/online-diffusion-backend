@@ -10,6 +10,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.model.AuthInfo;
 import team.polytech.online.diffusion.service.auth.AuthService;
+import team.polytech.online.diffusion.service.auth.AuthServiceImpl;
 
 import java.util.Optional;
 
@@ -61,6 +62,17 @@ public class AuthApiController implements AuthApi {
     public ResponseEntity<String> recovery(String email) {
         String recoveryId = authService.recovery(email);
         return recoveryId == null ? new ResponseEntity<>(HttpStatus.BAD_REQUEST) : new ResponseEntity<>(recoveryId, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> confirmation(Integer code, String recoveryToken) {
+        AuthServiceImpl.RecoveryResponse response = authService.confirmation(recoveryToken, code);
+        return switch (response) {
+            case SUCCESS -> new ResponseEntity<>(HttpStatus.OK);
+            case WRONG_CODE -> new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            case INVALID_TOKEN -> new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            case INTERNAL_ERROR -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        };
     }
 
     @Override

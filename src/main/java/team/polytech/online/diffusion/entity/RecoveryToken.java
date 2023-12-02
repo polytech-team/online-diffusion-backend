@@ -9,19 +9,17 @@ import java.io.Serializable;
 public class RecoveryToken implements Serializable {
     @Id
     private String UUID;
-    private Long code;
+    private Long userId;
+    private Integer code;
     private Stage stage;
     private Integer triesLeft;
 
     public RecoveryToken() {
     }
 
-    public RecoveryToken(String UUID, Long code, Stage stage) {
-        this(UUID, code, stage, 3);
-    }
-
-    public RecoveryToken(String UUID, Long code, Stage stage, Integer triesLeft) {
+    public RecoveryToken(String UUID, Long userId, Integer code, Stage stage, Integer triesLeft) {
         this.UUID = UUID;
+        this.userId = userId;
         this.code = code;
         this.stage = stage;
         this.triesLeft = triesLeft;
@@ -49,6 +47,14 @@ public class RecoveryToken implements Serializable {
 
     public void setTriesLeft(Integer triesLeft) {
         this.triesLeft = triesLeft;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public Integer getCode() {
+        return code;
     }
 
     public enum Stage {
