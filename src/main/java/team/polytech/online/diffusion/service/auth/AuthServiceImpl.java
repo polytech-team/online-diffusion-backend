@@ -240,13 +240,13 @@ public class AuthServiceImpl implements AuthService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("noreply@imaginarium.com");
         message.setTo(user.getEmail());
-        message.setSubject("Imaginarium Email confirmation");
+        message.setSubject("Подтверждение Email в Imaginarium");
         message.setText(String.format(
                 """
-                Hey %s!
-                So glad you decided to check out our service!
-                Here is link, to confirm your registration: %s
-                This message is send automatically, so there is no use trying to reply
+                Привет, %s!
+                Очень рады, что вас заинтересовал нащ сервис!
+                Вот ссылка, чтобы подтвердить регистрацию: %s
+                Это сообщение было создано и отправлено автоматически, поэтому не пытайся на него ответить
                 """, user.getUsername(), link));
         mailSender.send(message);
     }
@@ -258,11 +258,11 @@ public class AuthServiceImpl implements AuthService {
         message.setSubject("Imaginarium recovery token");
         message.setText(String.format(
                 """
-                Hey %s!
-                Looks like you forgot your password :(
-                Here is the recovery code: %d
-                If it wasn't you requesting password reset, you may just ignore this message
-                This message is send automatically, so there is no use trying to reply
+                Привет, %s!
+                Судя по всему ты забыл свой пароль :(
+                Ничего страшного, вот код для сброса: %d
+                Если это не ты запрашивал сброс пароля, сообщение можно просто проигнорировать
+                Это сообщение было создано и отправлено автоматически, поэтому не пытайся на него ответить
                 """, user.getUsername(), code));
         mailSender.send(message);
     }
