@@ -70,9 +70,13 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     @Override
     public List<String> getModels() {
-        if (mockEnabled) {
-            return List.of("anime-diffusion", "mega-models");
+        try {
+            return automaticUiApi.getSdModelsSdapiV1SdModelsGet().stream().map(SDModelItem::getModelName).toList();
+        } catch (Exception e) {
+            if (mockEnabled) {
+                return List.of("anime-diffusion", "mega-models");
+            }
+            throw e;
         }
-        return automaticUiApi.getSdModelsSdapiV1SdModelsGet().stream().map(SDModelItem::getModelName).toList();
     }
 }
