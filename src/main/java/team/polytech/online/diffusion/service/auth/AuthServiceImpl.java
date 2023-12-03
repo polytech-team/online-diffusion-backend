@@ -162,10 +162,12 @@ public class AuthServiceImpl implements AuthService {
 
         recoveryToken.setTriesLeft(recoveryToken.getTriesLeft() - 1);
 
-        if (recoveryToken.getTriesLeft() <= 0) {
-            recoveryToken.setStage(RecoveryToken.Stage.USED);
+        if (recoveryToken.getTriesLeft() > 0) {
+            recoveryRepository.save(recoveryToken);
+            return Optional.of(recoveryToken);
         }
 
+        recoveryToken.setStage(RecoveryToken.Stage.USED);
         recoveryRepository.save(recoveryToken);
 
         return Optional.empty();
