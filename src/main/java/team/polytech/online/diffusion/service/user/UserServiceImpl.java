@@ -1,22 +1,31 @@
 package team.polytech.online.diffusion.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.polytech.online.diffusion.entity.ImageEntity;
 import team.polytech.online.diffusion.entity.User;
+import team.polytech.online.diffusion.model.GalleryPagingWrapper;
 import team.polytech.online.diffusion.model.ProfileInfo;
 import team.polytech.online.diffusion.repository.ImageRepository;
 import team.polytech.online.diffusion.repository.UserRepository;
+import team.polytech.online.diffusion.service.image.ImageServiceImpl;
 
 import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Value("${spring.paging.page-size}")
+    private int pagingSize;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final ImageRepository imageRepository;
 
     @Autowired
@@ -77,6 +86,25 @@ public class UserServiceImpl implements UserService {
                 user.getGenerated(),
                 user.getGalleryImages(),
                 user.getPosted());
+    }
+
+    @Override
+    public GalleryPagingWrapper getGallery(Optional<Integer> marker) {
+        int pageNumber = marker.orElse(0);
+
+        Optional<User> user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        if (user.isEmpty()) {
+            return null;
+        }
+
+        Page<ImageEntity> page = imageRepository.findAllByUserAndPublicityNot(user.get(), ImageEntity.Publicity.UNUSED,
+                PageRequest.of(pageNumber, pagingSize, Sort.by("createdOn").descending()));
+        GalleryPagingWrapper wrapper = new GalleryPagingWrapper();
+        wrapper.images(page.get().map(ImageServiceImpl::transformFromEntity).toList());
+        wrapper.nextMarker(++pageNumber < page.getTotalPages() ? pageNumber : null);
+
+        return wrapper;
     }
 
     @Override

@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,12 +30,12 @@ public class PostPagingWrapper implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private BigDecimal nextMarker;
+  private Integer nextMarker;
 
   @Valid
   private List<@Valid Post> posts;
 
-  public PostPagingWrapper nextMarker(BigDecimal nextMarker) {
+  public PostPagingWrapper nextMarker(Integer nextMarker) {
     this.nextMarker = nextMarker;
     return this;
   }
@@ -45,14 +44,14 @@ public class PostPagingWrapper implements Serializable {
    * Маркер для следующего запроса
    * @return nextMarker
   */
-  @Valid 
+  
   @Schema(name = "nextMarker", description = "Маркер для следующего запроса", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("nextMarker")
-  public BigDecimal getNextMarker() {
+  public Integer getNextMarker() {
     return nextMarker;
   }
 
-  public void setNextMarker(BigDecimal nextMarker) {
+  public void setNextMarker(Integer nextMarker) {
     this.nextMarker = nextMarker;
   }
 

@@ -291,7 +291,7 @@ paths:
         required: false
         schema:
           example: 1
-          format: int64
+          format: int32
           type: integer
         style: form
       responses:
@@ -666,7 +666,7 @@ paths:
         required: false
         schema:
           example: 1
-          format: int64
+          format: int32
           type: integer
         style: form
       responses:
@@ -860,14 +860,15 @@ components:
     PostPagingWrapper:
       description: Оболочка для пагинации
       example:
-        nextMarker: 0.8008281904610115
+        nextMarker: 1
         posts:
         - null
         - null
       properties:
         nextMarker:
           description: Маркер для следующего запроса
-          type: number
+          type: integer
+          format: int32
         posts:
           description: Список присланных постов в нужном порядке
           items:
@@ -877,7 +878,7 @@ components:
     GalleryPagingWrapper:
       description: Оболочка для пагинации
       example:
-        nextMarker: 0.8008281904610115
+        nextMarker: 1
         images:
         - seed: seed
           authorName: authorName
@@ -896,7 +897,8 @@ components:
       properties:
         nextMarker:
           description: Маркер для следующего запроса
-          type: number
+          type: integer
+          format: int32
         images:
           description: Список присланных изображений в нужном порядке
           items:

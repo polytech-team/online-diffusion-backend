@@ -73,12 +73,12 @@ public interface ImagesApi {
         produces = { "application/json" }
     )
     default ResponseEntity<PostPagingWrapper> feed(
-        @Parameter(name = "marker", description = "Маркер, показывающий начиная с какого id подгружать ресурсы", in = ParameterIn.QUERY) @Valid @RequestParam(value = "marker", required = false) Optional<Long> marker
+        @Parameter(name = "marker", description = "Маркер, показывающий начиная с какого id подгружать ресурсы", in = ParameterIn.QUERY) @Valid @RequestParam(value = "marker", required = false) Optional<Integer> marker
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"nextMarker\" : 0.8008281904610115, \"posts\" : [ null, null ] }";
+                    String exampleString = "{ \"nextMarker\" : 1, \"posts\" : [ null, null ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
