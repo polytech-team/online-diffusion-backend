@@ -13,10 +13,13 @@ import team.polytech.online.diffusion.entity.RecoveryToken;
 import team.polytech.online.diffusion.entity.RegistrationToken;
 import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.model.AuthInfo;
+import team.polytech.online.diffusion.model.InvalidData;
 import team.polytech.online.diffusion.repository.RecoveryTokenRepository;
 import team.polytech.online.diffusion.repository.RegistrationTokenRepository;
 import team.polytech.online.diffusion.repository.UserRepository;
+import team.polytech.online.diffusion.service.auth.response.RegistrationResponse;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -91,14 +94,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String register(String email, String username, String password) {
+    public RegistrationResponse register(String email, String username, String password) {
         if (userRepository.findByUsername(username).isPresent()) {
-            return null;
+            return new RegistrationResponse(null, Collections.singletonList(InvalidData.USERNAME));
         }
         Optional<User> userOpt = userRepository.findByEmail(email);
 
         if (userOpt.isPresent() && userOpt.get().getStatus() != User.Status.NOT_CONFIRMED) {
-            return null;
+            return new RegistrationResponse(null, Collections.singletonList(InvalidData.EMAIL));
         }
 
         User user = userOpt.orElseGet(User::new);
@@ -111,7 +114,7 @@ public class AuthServiceImpl implements AuthService {
         String uuid = UUID.randomUUID().toString();
         registrationRepository.save(new RegistrationToken(uuid, user.getId(), User.Status.NOT_CONFIRMED));
         sendRegistrationMessage(user, ServletUriComponentsBuilder.fromCurrentContextPath().path("/auth/confirmation/" + uuid).build().toUriString());
-        return uuid;
+        return new RegistrationResponse(uuid, Collections.emptyList());
     }
 
     @Override
@@ -136,25 +139,25 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RecoveryResponse confirmation(String token, Integer code) {
+    public Optional<RecoveryToken> confirmation(String token, Integer code) {
         if (code == null) {
-            return RecoveryResponse.INVALID_TOKEN;
+            return Optional.empty();
         }
 
         RecoveryToken recoveryToken = getToken(token);
 
         if (recoveryToken == null) {
-            return RecoveryResponse.INVALID_TOKEN;
+            return Optional.empty();
         }
 
         if (recoveryToken.getStage() == RecoveryToken.Stage.READY) {
-            return RecoveryResponse.SUCCESS;
+            return Optional.of(recoveryToken);
         }
 
         if (code.equals(recoveryToken.getCode())) {
             recoveryToken.setStage(RecoveryToken.Stage.READY);
             recoveryRepository.save(recoveryToken);
-            return RecoveryResponse.SUCCESS;
+            return Optional.of(recoveryToken);
         }
 
         recoveryToken.setTriesLeft(recoveryToken.getTriesLeft() - 1);
@@ -165,7 +168,7 @@ public class AuthServiceImpl implements AuthService {
 
         recoveryRepository.save(recoveryToken);
 
-        return RecoveryResponse.FAILURE;
+        return Optional.empty();
     }
 
     @Override

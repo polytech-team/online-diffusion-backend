@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import team.polytech.online.diffusion.entity.RecoveryToken;
 import team.polytech.online.diffusion.model.AuthInfo;
+import team.polytech.online.diffusion.model.InvalidData;
 import team.polytech.online.diffusion.service.auth.AuthService;
 import team.polytech.online.diffusion.service.auth.AuthServiceImpl;
+import team.polytech.online.diffusion.service.auth.response.RegistrationResponse;
 
+import java.util.List;
 import java.util.Optional;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T02:19:33.552470+03:00[Europe/Moscow]")
@@ -59,11 +63,10 @@ public class AuthApiController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<Void> register(String email, String username, String password) {
-        //TODO Также адекватное отправление разных кодов ответа нужно
-        String uuid = authService.register(email, username, password);
-        if (uuid == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<List<String>> register(String email, String username, String password) {
+        RegistrationResponse response = authService.register(email, username, password);
+        if (response.getUuid() == null) {
+            return new ResponseEntity<>(toString(response.getData()), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -75,13 +78,14 @@ public class AuthApiController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<Void> confirmation(Integer code, String recoveryToken) {
-        AuthServiceImpl.RecoveryResponse response = authService.confirmation(recoveryToken, code);
-        return switch (response) {
-            case SUCCESS -> new ResponseEntity<>(HttpStatus.OK);
-            case FAILURE -> new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            case INVALID_TOKEN -> new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        };
+    public ResponseEntity<Integer> confirmation(Integer code, String recoveryToken) {
+        Optional<RecoveryToken> response = authService.confirmation(recoveryToken, code);
+        return response.map(token -> switch (token.getStage()) {
+            case NOT_CONFIRMED -> new ResponseEntity<>(response.get().getTriesLeft(), HttpStatus.BAD_REQUEST);
+            case READY -> new ResponseEntity<Integer>(HttpStatus.OK);
+            case USED -> new ResponseEntity<Integer>(HttpStatus.NOT_FOUND);
+        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
     }
 
     @Override
@@ -97,6 +101,10 @@ public class AuthApiController implements AuthApi {
     @Override
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
+    }
+
+    private List<String> toString(List<InvalidData> data) {
+        return data.stream().map(InvalidData::getValue).toList();
     }
 
 }

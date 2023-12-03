@@ -6,7 +6,6 @@
 package team.polytech.online.diffusion.api;
 
 import team.polytech.online.diffusion.model.AuthInfo;
-import team.polytech.online.diffusion.model.InvalidData;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -58,7 +57,9 @@ public interface AuthApi {
         description = "",
         tags = { "Auth" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "код правильный и соответсвует введеному recovery_token, можно присылать новый пароль через метод Confirm_new_Password"),
+            @ApiResponse(responseCode = "200", description = "код правильный и соответсвует введеному recovery_token, можно присылать новый пароль через метод Confirm_new_Password", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = Integer.class))
+            }),
             @ApiResponse(responseCode = "400", description = "присылается, когда такой recovery_token есть и он валидный, однако код был введен неверно", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = Integer.class))
             }),
@@ -73,7 +74,7 @@ public interface AuthApi {
         value = "/api/v1/auth/confirmation",
         produces = { "application/json" }
     )
-    default ResponseEntity<Void> confirmation(
+    default ResponseEntity<Integer> confirmation(
         @NotNull @Parameter(name = "code", description = "Код для сброса пароля с электронной почты", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "code", required = true) Integer code,
         @NotNull @Parameter(name = "recoveryToken", description = "Токен, назначаемый сессии сброса пароля", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "recoveryToken", required = true) String recoveryToken
     ) {
@@ -302,11 +303,15 @@ public interface AuthApi {
         description = "",
         tags = { "Auth" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "все хорошо, регистрация прошла успешно, юзер должен подтвердить почту"),
-            @ApiResponse(responseCode = "400", description = "регистрация невозможна, так как какие-то из полей были некоректными", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = InvalidData.class))
+            @ApiResponse(responseCode = "200", description = "все хорошо, регистрация прошла успешно, юзер должен подтвердить почту", content = {
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class)))
             }),
-            @ApiResponse(responseCode = "409", description = "регистрация невозможна, так как некоторые поля удовлетворяют требованиям уникальности")
+            @ApiResponse(responseCode = "400", description = "регистрация невозможна, так как какие-то из полей были некоректными", content = {
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class)))
+            }),
+            @ApiResponse(responseCode = "409", description = "регистрация невозможна, так как некоторые поля удовлетворяют требованиям уникальности", content = {
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class)))
+            })
         },
         security = {
             @SecurityRequirement(name = "JWTAuth")
@@ -317,11 +322,20 @@ public interface AuthApi {
         value = "/api/v1/auth/register",
         produces = { "application/json" }
     )
-    default ResponseEntity<Void> register(
+    default ResponseEntity<List<String>> register(
         @NotNull @jakarta.validation.constraints.Email@Parameter(name = "email", description = "Почта пользователя", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "email", required = true) String email,
         @NotNull @Size(min = 4, max = 32) @Parameter(name = "username", description = "Имя пользователя", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "username", required = true) String username,
         @NotNull @Size(min = 8, max = 32) @Parameter(name = "password", description = "Пароль пользователя", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "password", required = true) String password
     ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "[ \"email\", \"email\" ]";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
