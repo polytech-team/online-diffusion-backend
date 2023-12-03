@@ -1,2 +1,6 @@
 imgur:
   clientId: aa1a1a1aa1a111a
+spring:
+  mail:
+    username: user
+    password: pass123

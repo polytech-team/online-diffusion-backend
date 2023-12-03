@@ -37,6 +37,38 @@ tags:
     url: ""
   name: User
 paths:
+  /auth/confirmation/{uuid}:
+    get:
+      description: ""
+      operationId: email-confirmation
+      parameters:
+        - description: uuid токена регистрации, ссылка присылается на почту
+          explode: true
+          in: path
+          name: uuid
+          required: true
+          schema:
+            example: querty123
+            type: string
+      responses:
+        "200":
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Регистрация прошла успешно
+        "404":
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Такого uuid для регистрации не обнаружено
+      summary: Подтверждение почты по ссылке
+      tags:
+        - Auth
+      x-accepts: application/json
+      x-tags:
+        - tag: Auth
   /api/v1/auth/login:
     get:
       description: ""
@@ -147,6 +179,10 @@ paths:
         style: form
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidData'
           description: "все хорошо, регистрация прошла успешно, юзер должен подтве\
             рдить почту"
         "400":
@@ -157,6 +193,10 @@ paths:
           description: "регистрация невозможна, так как какие-то из полей были нек\
             оректными"
         "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidData'
           description: "регистрация невозможна, так как некоторые поля удовлетворя\
             ют требованиям уникальности"
       summary: Регистрация на портале
@@ -222,7 +262,11 @@ paths:
         style: form
       responses:
         "200":
-          content: {}
+          content:
+            application/json:
+              schema:
+                format: int32
+                type: integer
           description: "код правильный и соответсвует введеному recovery_token, мо\
             жно присылать новый пароль через метод Confirm_new_Password"
         "400":
@@ -245,15 +289,14 @@ paths:
       description: ""
       operationId: new-password
       parameters:
-      - description: Код для сброса пароля с электронной почты
+      - description: Новый пароль, выбранный пользователем
         explode: true
         in: query
-        name: code
+        name: password
         required: true
         schema:
-          example: 123456
-          format: int32
-          type: integer
+          example: querty123
+          type: string
         style: form
       - description: "Токен, назначаемый сессии сброса пароля"
         explode: true
@@ -919,11 +962,13 @@ components:
       type: string
     invalidData:
       description: показывает какие именно поля были некорректными
-      enum:
-      - email
-      - username
-      - password
-      type: string
+      type: array
+      items:
+        enum:
+          - email
+          - username
+          - password
+        type: string
     recoveryToken:
       description: "Токен, назначаемый сессии сброса пароля"
       type: string
