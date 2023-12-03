@@ -256,8 +256,6 @@ paths:
           example: 123456
           format: int32
           type: integer
-          maxLength: 6
-          minLength: 6
         style: form
       - description: "Токен, назначаемый сессии сброса пароля"
         explode: true
@@ -813,8 +811,6 @@ components:
         example: 123456
         format: int32
         type: integer
-        maxLength: 6
-        minLength: 6
       style: form
     marker:
       description: "Маркер, показывающий начиная с какого id подгружать ресурсы"

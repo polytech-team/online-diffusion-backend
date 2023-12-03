@@ -48,7 +48,6 @@ public interface ImagesApi {
      *
      * @param marker Маркер, показывающий начиная с какого id подгружать ресурсы (optional)
      * @return все хорошо, присланы посты (status code 200)
-     *         or такой маркер не найден (status code 404)
      *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
@@ -60,7 +59,6 @@ public interface ImagesApi {
             @ApiResponse(responseCode = "200", description = "все хорошо, присланы посты", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = PostPagingWrapper.class))
             }),
-            @ApiResponse(responseCode = "404", description = "такой маркер не найден"),
             @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {

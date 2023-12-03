@@ -92,7 +92,6 @@ public interface UserApi {
      *
      * @param marker Маркер, показывающий начиная с какого id подгружать ресурсы (optional)
      * @return все хорошо, присланы изображения галереи (status code 200)
-     *         or такой маркер не найден (status code 404)
      *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
@@ -104,7 +103,6 @@ public interface UserApi {
             @ApiResponse(responseCode = "200", description = "все хорошо, присланы изображения галереи", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = GalleryPagingWrapper.class))
             }),
-            @ApiResponse(responseCode = "404", description = "такой маркер не найден"),
             @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
@@ -159,7 +157,7 @@ public interface UserApi {
         value = "/api/v1/profile/password"
     )
     default ResponseEntity<Void> profilePassword(
-        @NotNull @Size(min = 8, max = 32) @Parameter(name = "password", description = "Пароль пользователя", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "password", required = true) String password
+        @NotNull @Size(min = 1, max = 128) @Parameter(name = "password", description = "Пароль пользователя", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "password", required = true) String password
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
@@ -194,7 +192,7 @@ public interface UserApi {
         value = "/api/v1/profile/username"
     )
     default ResponseEntity<Void> profileUsername(
-        @NotNull @Size(min = 4, max = 32) @Parameter(name = "username", description = "Имя пользователя", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "username", required = true) String username
+        @NotNull @Size(min = 1, max = 20) @Parameter(name = "username", description = "Имя пользователя", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "username", required = true) String username
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
