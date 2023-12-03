@@ -18,9 +18,9 @@ public class User implements UserDetails {
     private String username;
     private String email;
     private String password;
-    private Long generated;
-    private Long galleryImages;
-    private Long posted;
+    private Long generated = 0L;
+    private Long galleryImages = 0L;
+    private Long posted = 0L;
     private String avatarUrl;
     private Status status;
     @OneToMany(mappedBy = "user")
@@ -123,6 +123,18 @@ public class User implements UserDetails {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public void incrementGenerated() {
+        this.generated += 1;
+    }
+
+    public void incrementPosted() {
+        this.posted += 1;
+    }
+
+    public void incrementInGallery() {
+        this.galleryImages += 1;
     }
 
     public enum Status {

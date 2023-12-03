@@ -43,7 +43,10 @@ public class GeneratorApiController implements GeneratorApi {
 
     @Override
     public ResponseEntity<String> postGenerator(String prompt, String antiPrompt, String modelName, Optional<Integer> seed) {
-        int generationSeed = seed.orElse(random.nextInt());
+        int generationSeed = seed.orElse(random.nextInt(0, Integer.MAX_VALUE));
+        if (generationSeed < 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         try {
             GenerationStatus status = generatorService.generate(prompt, antiPrompt, modelName, generationSeed);
             if (status == null) {

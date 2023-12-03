@@ -7,10 +7,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import team.polytech.online.diffusion.entity.ImageEntity;
+import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.model.Image;
 import team.polytech.online.diffusion.model.Post;
 import team.polytech.online.diffusion.model.PostPagingWrapper;
 import team.polytech.online.diffusion.repository.ImageRepository;
+import team.polytech.online.diffusion.repository.UserRepository;
 
 import java.util.Optional;
 
@@ -20,9 +22,11 @@ public class ImageServiceImpl implements ImageService {
     @Value("${spring.paging.post-amount}")
     private int pagingSize;
     private final ImageRepository imageRepository;
+    private final UserRepository userRepository;
 
-    public ImageServiceImpl(ImageRepository imageRepository) {
+    public ImageServiceImpl(ImageRepository imageRepository, UserRepository userRepository) {
         this.imageRepository = imageRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -48,7 +52,7 @@ public class ImageServiceImpl implements ImageService {
     public PublishResult saveImageToGallery(String username, Long photoId) {
         Optional<ImageEntity> imageOpt = imageRepository.findById(photoId);
 
-        if (!imageOpt.isPresent()) {
+        if (imageOpt.isEmpty()) {
             return PublishResult.IMAGE_NOT_FOUND;
         }
 
@@ -58,12 +62,15 @@ public class ImageServiceImpl implements ImageService {
             return PublishResult.NOT_OWNED;
         }
 
-        if (image.getPublicity() == ImageEntity.Publicity.PRIVATE) {
+        if (image.getPublicity() != ImageEntity.Publicity.UNUSED) {
             return PublishResult.ALREADY_IN_GALLERY;
         }
 
         image.setPublicity(ImageEntity.Publicity.PRIVATE);
         imageRepository.save(image);
+        User author = image.getUser();
+        author.incrementInGallery();
+        userRepository.save(author);
         return PublishResult.SUCCESS;
     }
 
@@ -72,7 +79,7 @@ public class ImageServiceImpl implements ImageService {
     public PublishResult publishImage(String username, Long photoId) {
         Optional<ImageEntity> imageOpt = imageRepository.findById(photoId);
 
-        if (!imageOpt.isPresent()) {
+        if (imageOpt.isEmpty()) {
             return PublishResult.IMAGE_NOT_FOUND;
         }
 
@@ -86,8 +93,15 @@ public class ImageServiceImpl implements ImageService {
             return PublishResult.ALREADY_PUBLISHED;
         }
 
+        User author = image.getUser();
+        if (image.getPublicity() == ImageEntity.Publicity.UNUSED) {
+            author.incrementInGallery();
+        }
+
         image.setPublicity(ImageEntity.Publicity.PUBLIC);
         imageRepository.save(image);
+        author.incrementPosted();
+        userRepository.save(author);
         return PublishResult.SUCCESS;
     }
 

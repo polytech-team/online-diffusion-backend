@@ -51,9 +51,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         request.prompt(prompt);
         request.negativePrompt(antiPrompt);
         request.seed(seed);
-        request.height(128);
-        request.width(128);
-        request.steps(5);
+        request.height(512);
+        request.width(512);
+        request.steps(25);
         request.batchSize(1);
 
         String uuid = UUID.randomUUID().toString();

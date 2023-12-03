@@ -108,6 +108,10 @@ public class ImgurImageUploadService {
             ImageEntity result = imageRepository.save(image);
             generationRepository.save(new GenerationStatus(UUID, GenerationStatus.Stage.SUCCESSFUL, result.getId()));
             LOG.info("Image upload successful! " + response.getData().getLink());
+
+            User user = author.get();
+            user.incrementGenerated();
+            userRepository.save(user);
         }
     }
 }
