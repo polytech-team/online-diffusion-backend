@@ -22,6 +22,7 @@ public class User implements UserDetails {
     private Long galleryImages;
     private Long posted;
     private String avatarUrl;
+    private Status status;
     @OneToMany(mappedBy = "user")
     private List<ImageEntity> generatedImages;
 
@@ -114,5 +115,17 @@ public class User implements UserDetails {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public enum Status {
+        NOT_CONFIRMED, CONFIRMED
     }
 }

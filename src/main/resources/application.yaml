@@ -29,6 +29,14 @@ spring:
     password: rmpassword
     host: localhost
     port: 5672
+  mail:
+    host: smtp-relay.brevo.com
+    port: 587
+    properties:
+      smtp:
+        auth: true
+        starttls:
+          enable=true:
 stable-diffusion:
   mock:
     enabled: true

@@ -37,6 +37,7 @@ public class OnlineDiffusionApplication implements CommandLineRunner {
         user.setUsername("user");
         user.setEmail("foo@gmail.com");
         user.setPassword(new BCryptPasswordEncoder().encode("password"));
+        user.setStatus(User.Status.CONFIRMED);
         userRepository.save(user);
     }
 
