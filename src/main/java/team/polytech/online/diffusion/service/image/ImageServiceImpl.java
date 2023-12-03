@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 public class ImageServiceImpl implements ImageService {
 
-    @Value("${spring.paging.page-size}")
+    @Value("${spring.paging.post-amount}")
     private int pagingSize;
     private final ImageRepository imageRepository;
 

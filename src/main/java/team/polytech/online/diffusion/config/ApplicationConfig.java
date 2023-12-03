@@ -21,6 +21,8 @@ public class ApplicationConfig {
 
     @Value("${imgur.clientId}")
     private String clientId;
+    @Value("${stable-diffusion.url}")
+    private String urlSD;
 
     @Autowired
     public ApplicationConfig(UserDetailsService userDetailsService) {
@@ -48,7 +50,7 @@ public class ApplicationConfig {
     @Bean
     ApiClient getClient() {
         ApiClient client = new ApiClient();
-        client.setBasePath("http://127.0.0.1:7860");
+        client.setBasePath(urlSD);
         return client;
     }
 

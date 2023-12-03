@@ -22,7 +22,7 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Value("${spring.paging.page-size}")
+    @Value("${spring.paging.image-amount}")
     private int pagingSize;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
