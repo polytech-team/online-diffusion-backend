@@ -62,7 +62,7 @@ public class StableDiffusionRequestListener {
             Map<String, Object> options = automaticUiApi.getConfigSdapiV1OptionsGet();
 
             String currentModel = (String) options.get("sd_model_checkpoint");
-            if (currentModel == null || !currentModel.equals(request.getModel())) {
+            if (currentModel == null || !currentModel.contains(request.getModel())) {
                 options.put("sd_model_checkpoint", request.getModel());
                 automaticUiApi.setConfigSdapiV1OptionsPost(options);
             }
