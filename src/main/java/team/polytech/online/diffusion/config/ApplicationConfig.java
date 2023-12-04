@@ -23,6 +23,10 @@ public class ApplicationConfig {
     private String clientId;
     @Value("${stable-diffusion.url}")
     private String urlSD;
+    @Value("${stable-diffusion.username}")
+    private String userSD;
+    @Value("${stable-diffusion.password}")
+    private String passwordSD;
 
     @Autowired
     public ApplicationConfig(UserDetailsService userDetailsService) {
@@ -51,6 +55,8 @@ public class ApplicationConfig {
     ApiClient getClient() {
         ApiClient client = new ApiClient();
         client.setBasePath(urlSD);
+        client.setUsername(userSD);
+        client.setPassword(passwordSD);
         return client;
     }
 

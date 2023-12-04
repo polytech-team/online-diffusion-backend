@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import team.polytech.automatic.webui.api.DefaultApi;
 import team.polytech.automatic.webui.invoker.ApiClient;
-import team.polytech.automatic.webui.model.Options;
 import team.polytech.automatic.webui.model.SDModelItem;
 import team.polytech.automatic.webui.model.TextToImageResponse;
 import team.polytech.online.diffusion.config.SDQueueCfg;
@@ -19,6 +18,7 @@ import team.polytech.online.diffusion.entity.SDTxt2ImgRequest;
 import team.polytech.online.diffusion.repository.GenerationStatusRepository;
 
 import java.util.Collections;
+import java.util.Map;
 
 @EnableRabbit
 @Component
@@ -31,6 +31,8 @@ public class StableDiffusionRequestListener {
     private long mockTimeMs;
     @Value("${stable-diffusion.mock.image}")
     private String base64MockImage;
+    @Value("${stable-diffusion.conf.easy-negative-enabled}")
+    private boolean useEasyNegative;
 
     private final DefaultApi automaticUiApi;
     private final GenerationStatusRepository generationRepository;
@@ -51,19 +53,25 @@ public class StableDiffusionRequestListener {
         TextToImageResponse response;
 
         try {
-            Options options = automaticUiApi.getConfigSdapiV1OptionsGet();
-
             if (!isValidModel(request.getModel())) {
                 LOG.warn("Invalid model in request: " + request.getModel());
                 generationRepository.save(new GenerationStatus(request.getUUID(), GenerationStatus.Stage.FAILED));
                 return;
             }
 
-            String currentModel = (String) options.getSdModelCheckpoint();
+            Map<String, Object> options = automaticUiApi.getConfigSdapiV1OptionsGet();
+
+            String currentModel = (String) options.get("sd_model_checkpoint");
             if (currentModel == null || !currentModel.equals(request.getModel())) {
-                options.setSdModelCheckpoint(request.getModel());
+                options.put("sd_model_checkpoint", request.getModel());
                 automaticUiApi.setConfigSdapiV1OptionsPost(options);
             }
+
+            if (useEasyNegative) {
+                String prompt = "(EasyNegative)," + request.getRequest().getNegativePrompt();
+                request.getRequest().setNegativePrompt(prompt);
+            }
+
             response = automaticUiApi.text2imgapiSdapiV1Txt2imgPost(request.getRequest());
         } catch (RestClientException restClientException) {
             if (!mockEnabled) {
@@ -93,7 +101,7 @@ public class StableDiffusionRequestListener {
     }
 
     private boolean isValidModel(String target) {
-        return automaticUiApi.getSdModelsSdapiV1SdModelsGet()
+        return !automaticUiApi.getSdModelsSdapiV1SdModelsGet()
                 .stream()
                 .map(SDModelItem::getModelName)
                 .filter(model -> !model.equals(target))
