@@ -178,7 +178,7 @@ public interface ImagesApi {
      * @param photoId ID фото в базе данных (required)
      * @return изображение было успешно опубликовано (status code 201)
      *         or такого photo_id нет на сервере в принципе (status code 400)
-     *         or данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликована (status code 404)
+     *         or данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликованана (status code 409)
      *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
@@ -189,7 +189,7 @@ public interface ImagesApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "изображение было успешно опубликовано"),
             @ApiResponse(responseCode = "400", description = "такого photo_id нет на сервере в принципе"),
-            @ApiResponse(responseCode = "404", description = "данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликована"),
+            @ApiResponse(responseCode = "409", description = "данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликованана"),
             @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
