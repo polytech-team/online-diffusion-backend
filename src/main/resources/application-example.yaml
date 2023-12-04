@@ -4,3 +4,6 @@ spring:
   mail:
     username: user
     password: pass123
+stable-diffusion:
+  username: test
+  password: querty123

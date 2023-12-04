@@ -83,6 +83,8 @@ paths:
           example: foo@gmail.com
           format: email
           type: string
+          maxLength: 40
+          minLength: 1
         style: form
       - description: Пароль пользователя
         explode: true
@@ -91,8 +93,8 @@ paths:
         required: true
         schema:
           example: querty123
-          maxLength: 32
-          minLength: 8
+          maxLength: 128
+          minLength: 1
           type: string
         style: form
       responses:
@@ -154,6 +156,8 @@ paths:
           example: foo@gmail.com
           format: email
           type: string
+          maxLength: 40
+          minLength: 1
         style: form
       - description: Имя пользователя
         explode: true
@@ -162,8 +166,8 @@ paths:
         required: true
         schema:
           example: user
-          maxLength: 32
-          minLength: 4
+          maxLength: 20
+          minLength: 1
           type: string
         style: form
       - description: Пароль пользователя
@@ -173,8 +177,8 @@ paths:
         required: true
         schema:
           example: querty123
-          maxLength: 32
-          minLength: 8
+          maxLength: 128
+          minLength: 1
           type: string
         style: form
       responses:
@@ -219,6 +223,8 @@ paths:
           example: foo@gmail.com
           format: email
           type: string
+          maxLength: 40
+          minLength: 1
         style: form
       responses:
         "200":
@@ -296,6 +302,8 @@ paths:
         required: true
         schema:
           example: querty123
+          maxLength: 128
+          minLength: 1
           type: string
         style: form
       - description: "Токен, назначаемый сессии сброса пароля"
@@ -334,7 +342,7 @@ paths:
         required: false
         schema:
           example: 1
-          format: int64
+          format: int32
           type: integer
         style: form
       responses:
@@ -344,8 +352,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/PostPagingWrapper'
           description: "все хорошо, присланы посты"
-        "404":
-          description: такой маркер не найден
         401:
           $ref: '#/components/responses/401'
       security:
@@ -412,9 +418,9 @@ paths:
           description: изображение было успешно опубликовано
         "400":
           description: такого photo_id нет на сервере в принципе
-        "404":
+        "409":
           description: "данное photo_id не может быть опубликовано пользователем,\
-            \ так как это не его фотография или эта фотография уже была опубликова\
+            \ так как это не его фотография или эта фотография уже была опубликована\
             на"
         401:
           $ref: '#/components/responses/401'
@@ -523,6 +529,8 @@ paths:
         schema:
           example: cool looking panda
           type: string
+          maxLength: 1024
+          minLength: 1
         style: form
       - description: anti-prompt для создания фото
         explode: true
@@ -532,6 +540,8 @@ paths:
         schema:
           example: ugly face
           type: string
+          maxLength: 1024
+          minLength: 1
         style: form
       - description: Seed для генерации нейросети. Оставить пустым для случайного
         explode: true
@@ -646,8 +656,8 @@ paths:
         required: true
         schema:
           example: user
-          maxLength: 32
-          minLength: 4
+          maxLength: 20
+          minLength: 1
           type: string
         style: form
       responses:
@@ -679,8 +689,8 @@ paths:
         required: true
         schema:
           example: querty123
-          maxLength: 32
-          minLength: 8
+          maxLength: 128
+          minLength: 1
           type: string
         style: form
       responses:
@@ -709,7 +719,7 @@ paths:
         required: false
         schema:
           example: 1
-          format: int64
+          format: int32
           type: integer
         style: form
       responses:
@@ -719,8 +729,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/GalleryPagingWrapper'
           description: "все хорошо, присланы изображения галереи"
-        "404":
-          description: такой маркер не найден
         401:
           $ref: '#/components/responses/401'
       security:
@@ -745,6 +753,8 @@ components:
         example: foo@gmail.com
         format: email
         type: string
+        maxLength: 40
+        minLength: 1
       style: form
     password:
       description: Пароль пользователя
@@ -754,8 +764,8 @@ components:
       required: true
       schema:
         example: querty123
-        maxLength: 32
-        minLength: 8
+        maxLength: 128
+        minLength: 1
         type: string
       style: form
     username:
@@ -766,8 +776,8 @@ components:
       required: true
       schema:
         example: user
-        maxLength: 32
-        minLength: 4
+        maxLength: 20
+        minLength: 1
         type: string
       style: form
     refreshToken:
@@ -833,6 +843,8 @@ components:
       schema:
         example: cool looking panda
         type: string
+        maxLength: 1024
+        minLength: 1
       style: form
     anti-prompt:
       description: anti-prompt для создания фото
@@ -843,6 +855,8 @@ components:
       schema:
         example: ugly face
         type: string
+        maxLength: 1024
+        minLength: 1
       style: form
     seed:
       description: Seed для генерации нейросети. Оставить пустым для случайного
@@ -852,7 +866,7 @@ components:
       required: false
       schema:
         example: 123456
-        format: int64
+        format: int32
         type: integer
       style: form
     modelName:
@@ -903,14 +917,15 @@ components:
     PostPagingWrapper:
       description: Оболочка для пагинации
       example:
-        nextMarker: 0.8008281904610115
+        nextMarker: 1
         posts:
         - null
         - null
       properties:
         nextMarker:
           description: Маркер для следующего запроса
-          type: number
+          type: integer
+          format: int32
         posts:
           description: Список присланных постов в нужном порядке
           items:
@@ -920,7 +935,7 @@ components:
     GalleryPagingWrapper:
       description: Оболочка для пагинации
       example:
-        nextMarker: 0.8008281904610115
+        nextMarker: 1
         images:
         - seed: seed
           authorName: authorName
@@ -939,7 +954,8 @@ components:
       properties:
         nextMarker:
           description: Маркер для следующего запроса
-          type: number
+          type: integer
+          format: int32
         images:
           description: Список присланных изображений в нужном порядке
           items:

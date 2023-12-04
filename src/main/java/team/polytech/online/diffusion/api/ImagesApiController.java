@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 import team.polytech.online.diffusion.model.Image;
+import team.polytech.online.diffusion.model.PostPagingWrapper;
 import team.polytech.online.diffusion.service.image.ImageService;
 import team.polytech.online.diffusion.service.image.ImageServiceImpl;
 import team.polytech.online.diffusion.service.user.UserService;
@@ -71,6 +72,11 @@ public class ImagesApiController implements ImagesApi {
             default:
                 return ResponseEntity.badRequest().build();
         }
+    }
+
+    @Override
+    public ResponseEntity<PostPagingWrapper> feed(Optional<Integer> marker) {
+        return new ResponseEntity<>(service.getFeed(marker), HttpStatus.OK);
     }
 
     @Override

@@ -48,7 +48,6 @@ public interface ImagesApi {
      *
      * @param marker Маркер, показывающий начиная с какого id подгружать ресурсы (optional)
      * @return все хорошо, присланы посты (status code 200)
-     *         or такой маркер не найден (status code 404)
      *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
@@ -60,7 +59,6 @@ public interface ImagesApi {
             @ApiResponse(responseCode = "200", description = "все хорошо, присланы посты", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = PostPagingWrapper.class))
             }),
-            @ApiResponse(responseCode = "404", description = "такой маркер не найден"),
             @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
@@ -73,12 +71,12 @@ public interface ImagesApi {
         produces = { "application/json" }
     )
     default ResponseEntity<PostPagingWrapper> feed(
-        @Parameter(name = "marker", description = "Маркер, показывающий начиная с какого id подгружать ресурсы", in = ParameterIn.QUERY) @Valid @RequestParam(value = "marker", required = false) Optional<Long> marker
+        @Parameter(name = "marker", description = "Маркер, показывающий начиная с какого id подгружать ресурсы", in = ParameterIn.QUERY) @Valid @RequestParam(value = "marker", required = false) Optional<Integer> marker
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"nextMarker\" : 0.8008281904610115, \"posts\" : [ null, null ] }";
+                    String exampleString = "{ \"nextMarker\" : 1, \"posts\" : [ null, null ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -180,7 +178,7 @@ public interface ImagesApi {
      * @param photoId ID фото в базе данных (required)
      * @return изображение было успешно опубликовано (status code 201)
      *         or такого photo_id нет на сервере в принципе (status code 400)
-     *         or данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликована (status code 404)
+     *         or данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликованана (status code 409)
      *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
@@ -191,7 +189,7 @@ public interface ImagesApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "изображение было успешно опубликовано"),
             @ApiResponse(responseCode = "400", description = "такого photo_id нет на сервере в принципе"),
-            @ApiResponse(responseCode = "404", description = "данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликована"),
+            @ApiResponse(responseCode = "409", description = "данное photo_id не может быть опубликовано пользователем, так как это не его фотография или эта фотография уже была опубликованана"),
             @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {

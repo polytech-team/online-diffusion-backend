@@ -2,6 +2,9 @@ spring.profiles.include: secrets, photomock
 server:
   port: 8080
 spring:
+  paging:
+    post-amount: 20
+    image-amount: 32
   jackson:
     date-format: team.polytech.online.diffusion.RFC3339DateFormat
     serialization:
@@ -13,7 +16,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -38,6 +41,9 @@ spring:
         starttls:
           enable=true:
 stable-diffusion:
+  url: http://127.0.0.1:7860
   mock:
     enabled: true
     time-ms: 5000
+  conf:
+    easy-negative-enabled: true

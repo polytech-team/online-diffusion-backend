@@ -66,7 +66,7 @@ public class AuthApiController implements AuthApi {
     public ResponseEntity<List<String>> register(String email, String username, String password) {
         RegistrationResponse response = authService.register(email, username, password);
         if (response.getUuid() == null) {
-            return new ResponseEntity<>(toString(response.getData()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(toString(response.getData()), HttpStatus.CONFLICT);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

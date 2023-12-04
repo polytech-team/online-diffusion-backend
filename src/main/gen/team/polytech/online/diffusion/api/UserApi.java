@@ -92,7 +92,6 @@ public interface UserApi {
      *
      * @param marker Маркер, показывающий начиная с какого id подгружать ресурсы (optional)
      * @return все хорошо, присланы изображения галереи (status code 200)
-     *         or такой маркер не найден (status code 404)
      *         or Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации (status code 401)
      */
     @Operation(
@@ -104,7 +103,6 @@ public interface UserApi {
             @ApiResponse(responseCode = "200", description = "все хорошо, присланы изображения галереи", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = GalleryPagingWrapper.class))
             }),
-            @ApiResponse(responseCode = "404", description = "такой маркер не найден"),
             @ApiResponse(responseCode = "401", description = "Попытка обратиться к защищенному JWT токеном эндпоинту без авторизации")
         },
         security = {
@@ -117,12 +115,12 @@ public interface UserApi {
         produces = { "application/json" }
     )
     default ResponseEntity<GalleryPagingWrapper> profileGallery(
-        @Parameter(name = "marker", description = "Маркер, показывающий начиная с какого id подгружать ресурсы", in = ParameterIn.QUERY) @Valid @RequestParam(value = "marker", required = false) Optional<Long> marker
+        @Parameter(name = "marker", description = "Маркер, показывающий начиная с какого id подгружать ресурсы", in = ParameterIn.QUERY) @Valid @RequestParam(value = "marker", required = false) Optional<Integer> marker
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"nextMarker\" : 0.8008281904610115, \"images\" : [ { \"seed\" : \"seed\", \"authorName\" : \"authorName\", \"authorAvatarUrl\" : \"authorAvatarUrl\", \"photoId\" : 0.8008281904610115, \"anti-prompt\" : \"anti-prompt\", \"model\" : \"model\", \"prompt\" : \"prompt\" }, { \"seed\" : \"seed\", \"authorName\" : \"authorName\", \"authorAvatarUrl\" : \"authorAvatarUrl\", \"photoId\" : 0.8008281904610115, \"anti-prompt\" : \"anti-prompt\", \"model\" : \"model\", \"prompt\" : \"prompt\" } ] }";
+                    String exampleString = "{ \"nextMarker\" : 1, \"images\" : [ { \"seed\" : \"seed\", \"authorName\" : \"authorName\", \"authorAvatarUrl\" : \"authorAvatarUrl\", \"photoId\" : 0.8008281904610115, \"anti-prompt\" : \"anti-prompt\", \"model\" : \"model\", \"prompt\" : \"prompt\" }, { \"seed\" : \"seed\", \"authorName\" : \"authorName\", \"authorAvatarUrl\" : \"authorAvatarUrl\", \"photoId\" : 0.8008281904610115, \"anti-prompt\" : \"anti-prompt\", \"model\" : \"model\", \"prompt\" : \"prompt\" } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -159,7 +157,7 @@ public interface UserApi {
         value = "/api/v1/profile/password"
     )
     default ResponseEntity<Void> profilePassword(
-        @NotNull @Size(min = 8, max = 32) @Parameter(name = "password", description = "Пароль пользователя", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "password", required = true) String password
+        @NotNull @Size(min = 1, max = 128) @Parameter(name = "password", description = "Пароль пользователя", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "password", required = true) String password
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
@@ -194,7 +192,7 @@ public interface UserApi {
         value = "/api/v1/profile/username"
     )
     default ResponseEntity<Void> profileUsername(
-        @NotNull @Size(min = 4, max = 32) @Parameter(name = "username", description = "Имя пользователя", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "username", required = true) String username
+        @NotNull @Size(min = 1, max = 20) @Parameter(name = "username", description = "Имя пользователя", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "username", required = true) String username
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
