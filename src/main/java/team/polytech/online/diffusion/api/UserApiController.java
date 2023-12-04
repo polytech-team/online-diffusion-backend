@@ -60,7 +60,7 @@ public class UserApiController implements UserApi {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<ProfileInfo> profileInfo = userService.getProfileInfo(username);
         return profileInfo.map(info -> new ResponseEntity<>(info, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     @Override
