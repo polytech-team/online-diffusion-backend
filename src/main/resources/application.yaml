@@ -41,7 +41,7 @@ spring:
         starttls:
           enable=true:
 stable-diffusion:
-  url: https://cbcb667c4a860cd42a.gradio.live
+  url: http://127.0.0.1:7860
   mock:
     enabled: true
     time-ms: 5000
