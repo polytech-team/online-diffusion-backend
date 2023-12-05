@@ -1,6 +1,8 @@
 spring.profiles.include: secrets, photomock
 server:
   port: 8080
+api:
+  url: localhost:7860
 spring:
   paging:
     post-amount: 20
@@ -32,6 +34,10 @@ spring:
     password: rmpassword
     host: localhost
     port: 5672
+  docker:
+    compose:
+      enabled: true
+      file: docker-compose-local.yml
   mail:
     host: smtp-relay.brevo.com
     port: 587
