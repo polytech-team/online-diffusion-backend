@@ -170,8 +170,8 @@ public interface GeneratorApi {
         produces = { "application/json" }
     )
     default ResponseEntity<String> postGenerator(
-        @NotNull @Parameter(name = "prompt", description = "prompt для создания фото", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "prompt", required = true) String prompt,
-        @NotNull @Parameter(name = "anti-prompt", description = "anti-prompt для создания фото", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "anti-prompt", required = true) String antiPrompt,
+        @NotNull @Size(min = 1, max = 1024) @Parameter(name = "prompt", description = "prompt для создания фото", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "prompt", required = true) String prompt,
+        @NotNull @Size(min = 1, max = 1024) @Parameter(name = "anti-prompt", description = "anti-prompt для создания фото", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "anti-prompt", required = true) String antiPrompt,
         @NotNull @Parameter(name = "modelName", description = "Название модели, которая будет использоваться для генерации", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "modelName", required = true) String modelName,
         @Parameter(name = "seed", description = "Seed для генерации нейросети. Оставить пустым для случайного", in = ParameterIn.QUERY) @Valid @RequestParam(value = "seed", required = false) Optional<Integer> seed
     ) {

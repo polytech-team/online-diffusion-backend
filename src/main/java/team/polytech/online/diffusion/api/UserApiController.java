@@ -1,19 +1,18 @@
 package team.polytech.online.diffusion.api;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-
+import jakarta.annotation.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
+import team.polytech.online.diffusion.model.GalleryPagingWrapper;
+import team.polytech.online.diffusion.model.ProfileInfo;
+import team.polytech.online.diffusion.service.user.UserService;
 
 import java.util.Optional;
-
-import jakarta.annotation.Generated;
-import team.polytech.online.diffusion.service.user.UserService;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-10-26T02:19:33.552470+03:00[Europe/Moscow]")
 @Controller
@@ -43,7 +42,7 @@ public class UserApiController implements UserApi {
         if (passwordChanged) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
@@ -53,7 +52,23 @@ public class UserApiController implements UserApi {
         if (usernameChanged) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    @Override
+    public ResponseEntity<ProfileInfo> getProfile() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<ProfileInfo> profileInfo = userService.getProfileInfo(username);
+        return profileInfo.map(info -> new ResponseEntity<>(info, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    @Override
+    public ResponseEntity<GalleryPagingWrapper> profileGallery(Optional<Integer> marker) {
+        GalleryPagingWrapper wrapper = userService.getGallery(marker);
+        if (wrapper == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(wrapper, HttpStatus.OK);
+    }
 }

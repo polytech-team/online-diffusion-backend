@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import team.polytech.online.diffusion.entity.Tokens;
+import team.polytech.online.diffusion.entity.AuthToken;
 import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.model.AuthInfo;
-import team.polytech.online.diffusion.repository.TokenRepository;
+import team.polytech.online.diffusion.repository.AuthTokenRepository;
 
 @Service
 public class JwtService {
@@ -23,10 +23,10 @@ public class JwtService {
     private final SecretKey secretAccessKey = Keys.hmacShaKeyFor("secretAccessKey12321321312213213213212132".getBytes());
     private final SecretKey secretRefreshKey = Keys.hmacShaKeyFor("secretRefreshKey123213213213213213213123213213".getBytes());
 
-    private final TokenRepository tokenRepository;
+    private final AuthTokenRepository authTokenRepository;
 
-    public JwtService(TokenRepository tokenRepository) {
-        this.tokenRepository = tokenRepository;
+    public JwtService(AuthTokenRepository authTokenRepository) {
+        this.authTokenRepository = authTokenRepository;
     }
 
     private Claims extractClaims(String token, SecretKey secretKey) {
@@ -41,7 +41,7 @@ public class JwtService {
     public AuthInfo generateAuthInfo(User user) {
         String accessToken = generateAccessToken(user);
         String refreshToken = generateRefreshToken(user);
-        tokenRepository.save(new Tokens(user.getId(), accessToken, refreshToken));
+        authTokenRepository.save(new AuthToken(user.getId(), accessToken, refreshToken));
         return new AuthInfo(refreshToken, accessToken);
     }
 
@@ -69,7 +69,7 @@ public class JwtService {
         if (claims.getExpiration().before(new Date())) {
             return null;
         }
-        Optional<Tokens> tokens = tokenRepository.findById(Long.valueOf(claims.getSubject()));
+        Optional<AuthToken> tokens = authTokenRepository.findById(Long.valueOf(claims.getSubject()));
         return tokens.isPresent() && Objects.equals(tokens.get().getAccessToken(), accessToken)
             ? tokens.get().getUserId()
             : null;
@@ -81,7 +81,7 @@ public class JwtService {
             if (claims.getExpiration().before(new Date())) {
                 return null;
             }
-            Optional<Tokens> tokens = tokenRepository.findById(Long.valueOf(claims.getSubject()));
+            Optional<AuthToken> tokens = authTokenRepository.findById(Long.valueOf(claims.getSubject()));
             return tokens.isPresent() && Objects.equals(tokens.get().getRefreshToken(), refreshToken)
                 ? tokens.get().getUserId()
                 : null;

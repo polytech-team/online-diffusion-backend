@@ -18,11 +18,15 @@ import team.polytech.imgur.invoker.auth.ApiKeyAuth;
 @Configuration
 public class ApplicationConfig {
     private final UserDetailsService userDetailsService;
-    @Value("${api.url}")
-    private String stableDiffusionApiUrl;
 
     @Value("${imgur.clientId}")
     private String clientId;
+    @Value("${stable-diffusion.url}")
+    private String urlSD;
+    @Value("${stable-diffusion.username}")
+    private String userSD;
+    @Value("${stable-diffusion.password}")
+    private String passwordSD;
 
     @Autowired
     public ApplicationConfig(UserDetailsService userDetailsService) {
@@ -50,8 +54,9 @@ public class ApplicationConfig {
     @Bean
     ApiClient getClient() {
         ApiClient client = new ApiClient();
-        client.setBasePath(stableDiffusionApiUrl);
-        System.out.println(stableDiffusionApiUrl);
+        client.setBasePath(urlSD);
+        client.setUsername(userSD);
+        client.setPassword(passwordSD);
         return client;
     }
 
