@@ -1,0 +1,33 @@
+spring.profiles.include: secrets, photomock
+server:
+  port: 8080
+spring:
+  paging:
+    post-amount: 20
+    image-amount: 32
+  jackson:
+    date-format: team.polytech.online.diffusion.RFC3339DateFormat
+    serialization:
+      write-dates-as-timestamps: false
+  datasource:
+    url: jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: h2
+  data:
+    redis:
+      host: localhost
+      port: 6370
+stable-diffusion:
+  url: http://127.0.0.1:7860
+  mock:
+    enabled: true
+    time-ms: 1
+  conf:
+    easy-negative-enabled: true
