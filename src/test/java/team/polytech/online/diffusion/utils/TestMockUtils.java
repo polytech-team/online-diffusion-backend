@@ -2,6 +2,7 @@ package team.polytech.online.diffusion.utils;
 
 import org.mockito.Mockito;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.repository.UserRepository;
@@ -9,6 +10,9 @@ import team.polytech.online.diffusion.repository.UserRepository;
 import java.util.Optional;
 
 public class TestMockUtils {
+
+    public static final String TEST_EMAIL = "foo@gmail.com";
+    public static final String TEST_PASSWORD = "sdlkfjjdklsg";
 
     public static User mockStubUserByUsername(UserRepository mock) {
         User user = getStubUser();
@@ -27,20 +31,27 @@ public class TestMockUtils {
     }
 
     public static void mockAuthInfo(User user) {
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                user,
-                null,
-                null
+        SecurityContextHolder.getContext().setAuthentication(getAuthInfo(user));
+    }
+
+    public static Authentication getAuthInfo(User user) {
+        return new UsernamePasswordAuthenticationToken(
+            user,
+            null,
+            null
         );
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
+
+    public static Authentication getStubAuthInfo() {
+        return getAuthInfo(getStubUser());
     }
 
     public static User getStubUser() {
         User user = new User();
         user.setId(0L);
         user.setUsername("Вася");
-        user.setPassword("sdlkfjjdklsg");
-        user.setEmail("foo@gmail.com");
+        user.setPassword(TEST_PASSWORD);
+        user.setEmail(TEST_EMAIL);
         user.setStatus(User.Status.CONFIRMED);
         user.setAvatarUrl("too");
         user.setGalleryImages(3L);
