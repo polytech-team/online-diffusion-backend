@@ -12,7 +12,7 @@ public class ExceptionApiTests {
     private ExceptionController exceptionController = new ExceptionController();
 
     @Test
-    public void UserApiController_getProfile_OK() {
+    public void ExceptionController_handleConstraintViolation_BAD_REQUEST() {
         Set<ConstraintViolation<?>> constraintViolations = new HashSet<>();
         ConstraintViolationException exception = new ConstraintViolationException("Validation failed", constraintViolations);
 
