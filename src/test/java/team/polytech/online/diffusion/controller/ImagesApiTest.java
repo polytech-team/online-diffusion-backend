@@ -7,20 +7,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.NativeWebRequest;
 import team.polytech.online.diffusion.api.ImagesApiController;
-
 import team.polytech.online.diffusion.model.Image;
 import team.polytech.online.diffusion.model.PostPagingWrapper;
-import team.polytech.online.diffusion.repository.ImageRepository;
 import team.polytech.online.diffusion.service.image.ImageService;
 import team.polytech.online.diffusion.service.image.ImageServiceImpl;
 import team.polytech.online.diffusion.service.user.UserService;
 import team.polytech.online.diffusion.utils.TestMockUtils;
-
 
 import java.util.Optional;
 
@@ -113,6 +109,17 @@ class ImagesApiTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    void ImagesApiController_putImage_UserNotFound() {
+        Long photoId = 1L;
+        when(imageService.saveImageToGallery("Вася", photoId)).thenReturn(ImageServiceImpl.PublishResult.USER_NOT_FOUND);
+
+        ResponseEntity<Void> response = controller.putImage(photoId);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
     @Test
     void ImagesApiController_postImage_OK() {
         Long photoId = 1L;
@@ -131,6 +138,26 @@ class ImagesApiTest {
         ResponseEntity<Void> response = controller.postImage(photoId);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void ImagesApiController_postImage_ImageNotFound() {
+        Long photoId = 1L;
+        when(imageService.publishImage("Вася", photoId)).thenReturn(ImageServiceImpl.PublishResult.IMAGE_NOT_FOUND);
+
+        ResponseEntity<Void> response = controller.postImage(photoId);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void ImagesApiController_postImage_AlreadyPublished() {
+        Long photoId = 1L;
+        when(imageService.publishImage("Вася", photoId)).thenReturn(ImageServiceImpl.PublishResult.ALREADY_PUBLISHED);
+
+        ResponseEntity<Void> response = controller.postImage(photoId);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     }
 
     @Test

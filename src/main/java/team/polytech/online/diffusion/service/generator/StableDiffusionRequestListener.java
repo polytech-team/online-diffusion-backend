@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import team.polytech.automatic.webui.api.DefaultApi;
-import team.polytech.automatic.webui.invoker.ApiClient;
 import team.polytech.automatic.webui.model.SDModelItem;
 import team.polytech.automatic.webui.model.TextToImageResponse;
 import team.polytech.online.diffusion.config.SDQueueCfg;
@@ -39,10 +38,10 @@ public class StableDiffusionRequestListener {
     private final ImgurImageUploadService imageService;
 
     @Autowired
-    public StableDiffusionRequestListener(ApiClient client,
+    public StableDiffusionRequestListener(DefaultApi api,
                                           GenerationStatusRepository generationRepository,
                                           ImgurImageUploadService imageService) {
-        automaticUiApi = new DefaultApi(client);
+        automaticUiApi = api;
         this.generationRepository = generationRepository;
         this.imageService = imageService;
     }
