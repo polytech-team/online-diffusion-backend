@@ -42,10 +42,24 @@ public class UserApiTests {
     }
 
     @Test
+    public void UserApiController_profilePassword_Error() {
+        Mockito.when(userService.changeUserPassword(Mockito.any(), Mockito.any())).thenReturn(false);
+
+        Assertions.assertThat(userController.profilePassword("123").getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
     public void UserApiController_profileUsername_OK() {
         Mockito.when(userService.changeUsername(Mockito.any(), Mockito.any())).thenReturn(true);
 
         Assertions.assertThat(userController.profileUsername("123").getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void UserApiController_profileUsername_Error() {
+        Mockito.when(userService.changeUsername(Mockito.any(), Mockito.any())).thenReturn(false);
+
+        Assertions.assertThat(userController.profileUsername("123").getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -60,6 +74,13 @@ public class UserApiTests {
         Mockito.when(userService.getGallery(Mockito.any())).thenReturn(new GalleryPagingWrapper());
 
         Assertions.assertThat(userController.profileGallery(Optional.empty()).getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void UserApiController_profileGallery_EmptyWrapper() {
+        Mockito.when(userService.getGallery(Mockito.any())).thenReturn(null);
+
+        Assertions.assertThat(userController.profileGallery(Optional.empty()).getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Test
