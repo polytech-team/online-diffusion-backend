@@ -276,7 +276,7 @@
         <dependency>
             <groupId>com.github.polytech-team</groupId>
             <artifactId>spring-automatic-api-client</artifactId>
-            <version>master-c36d9a2a4c-1</version>
+            <version>master-65c420d220-1</version>
         </dependency>
 
         <dependency>
