@@ -74,18 +74,6 @@ public class AuthServiceTests {
         TestMockUtils.mockAuthInfo(TestMockUtils.getStubUser());
     }
 
-//    @Test
-//    void authService_login_success() {
-//        when(authenticationManager.authenticate(Mockito.any())).thenReturn(TestMockUtils.getStubAuthInfo());
-//
-//        when(authTokenRepository.save(Mockito.any())).
-//        AuthInfo auth = authService.login(TestMockUtils.TEST_EMAIL, TestMockUtils.TEST_PASSWORD);
-//
-//        assertThat(auth).isNotNull();
-//        assertThat(auth.getAccessToken()).isNotEmpty();
-//        assertThat(auth.getRefreshToken()).isNotEmpty();
-//    }
-
     @Test
     void authService_confirmRegistration_nullToken() {
         assertThat(authService.confirmRegistration(null)).isFalse();
