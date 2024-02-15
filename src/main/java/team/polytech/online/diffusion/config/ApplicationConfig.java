@@ -11,7 +11,9 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import team.polytech.automatic.webui.api.DefaultApi;
 import team.polytech.automatic.webui.invoker.ApiClient;
+import team.polytech.imgur.api.ImageApi;
 import team.polytech.imgur.invoker.ImgurApiClient;
 import team.polytech.imgur.invoker.auth.ApiKeyAuth;
 
@@ -61,6 +63,11 @@ public class ApplicationConfig {
     }
 
     @Bean
+    DefaultApi getAutomaticApi(ApiClient client) {
+        return new DefaultApi(client);
+    }
+
+    @Bean
     ImgurApiClient getImgurApi() {
         ImgurApiClient anonymous = new ImgurApiClient(true);
         anonymous.setBasePath("https://api.imgur.com");
@@ -68,5 +75,10 @@ public class ApplicationConfig {
         ApiKeyAuth client = (ApiKeyAuth) anonymous.getAuthentication("clientId");
         client.setApiKey("Client-ID " + clientId);
         return anonymous;
+    }
+
+    @Bean
+    ImageApi getImageApi(ImgurApiClient client) {
+        return new ImageApi(client);
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import team.polytech.automatic.webui.model.StableDiffusionProcessingTxt2Img;
 import team.polytech.imgur.api.ImageApi;
-import team.polytech.imgur.invoker.ImgurApiClient;
 import team.polytech.imgur.model.ImageResponse;
 import team.polytech.online.diffusion.entity.GenerationStatus;
 import team.polytech.online.diffusion.entity.ImageEntity;
@@ -31,11 +30,11 @@ public class ImgurImageUploadService {
     private final UserRepository userRepository;
     private final ImageApi imageApi;
 
-    public ImgurImageUploadService(ImgurApiClient imgurApiClient,
+    public ImgurImageUploadService(ImageApi imgurApi,
                                    GenerationStatusRepository generationRepository,
                                    ImageRepository imageRepository,
                                    UserRepository userRepository) {
-        this.imageApi = new ImageApi(imgurApiClient);
+        this.imageApi = imgurApi;
         this.generationRepository = generationRepository;
         this.imageRepository = imageRepository;
         this.userRepository = userRepository;
