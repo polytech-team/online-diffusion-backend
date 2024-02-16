@@ -1,7 +1,6 @@
 package team.polytech.online.diffusion.service;
 
-import java.util.Optional;
-
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,45 +10,39 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
-
-import team.polytech.online.diffusion.entity.ImageEntity;
 import team.polytech.online.diffusion.entity.RecoveryToken;
 import team.polytech.online.diffusion.entity.RegistrationToken;
 import team.polytech.online.diffusion.entity.User;
-import team.polytech.online.diffusion.model.AuthInfo;
-import team.polytech.online.diffusion.model.Image;
 import team.polytech.online.diffusion.model.InvalidData;
 import team.polytech.online.diffusion.repository.AuthTokenRepository;
-import team.polytech.online.diffusion.repository.ImageRepository;
 import team.polytech.online.diffusion.repository.RecoveryTokenRepository;
 import team.polytech.online.diffusion.repository.RegistrationTokenRepository;
 import team.polytech.online.diffusion.repository.UserRepository;
-import team.polytech.online.diffusion.service.auth.AuthService;
 import team.polytech.online.diffusion.service.auth.AuthServiceImpl;
+import team.polytech.online.diffusion.service.auth.CustomUserDetailsService;
 import team.polytech.online.diffusion.service.auth.JwtService;
 import team.polytech.online.diffusion.service.auth.response.RegistrationResponse;
-import team.polytech.online.diffusion.service.image.ImageServiceImpl;
 import team.polytech.online.diffusion.utils.TestMockUtils;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 public class AuthServiceTests {
     @Autowired
-    private JwtService jwtService;
+    private AuthServiceImpl authService;
 
     @Autowired
-    private AuthServiceImpl authService;
+    private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtService jwtService;
 
     @MockBean
     private UserRepository userRepository;
@@ -101,7 +94,6 @@ public class AuthServiceTests {
 
     @Test
     void authService_confirmRegistration_success() {
-//        when(authenticationManager.authenticate(Mockito.any())).thenReturn(TestMockUtils.getStubAuthInfo());
 
         RegistrationToken token = new RegistrationToken(null, 1L, null);
         when(registrationTokenRepository.findById(Mockito.any())).thenReturn(Optional.of(token));
@@ -111,6 +103,20 @@ public class AuthServiceTests {
         assertThat(authService.confirmRegistration("token")).isTrue();
         assertThat(token.getStatus()).isEqualTo(User.Status.CONFIRMED);
         assertThat(testUser.getStatus()).isEqualTo(User.Status.CONFIRMED);
+    }
+
+    @Test
+    void authService_login_success() {
+        when(authenticationManager.authenticate(any())).thenReturn(TestMockUtils.getAuthInfo(TestMockUtils.getStubUser()));
+        assertThat(authService.login("foo", "bar")).isNotNull();
+    }
+
+    @Test
+    void authService_login_not_confirmed() {
+        User user = TestMockUtils.getStubUser();
+        user.setStatus(User.Status.NOT_CONFIRMED);
+        when(authenticationManager.authenticate(any())).thenReturn(TestMockUtils.getAuthInfo(user));
+        assertThat(authService.login("foo", "bar")).isNull();
     }
 
     @Test
@@ -297,4 +303,24 @@ public class AuthServiceTests {
         assertThat(user.getPassword()).isNotEqualTo(password);
         assertThat(recoveryToken.getStage()).isEqualTo(RecoveryToken.Stage.USED);
     }
+
+    @Test
+    void CustomUserDetailsService_loadUserByUsername_OK() {
+        when(userRepository.findByEmail(Mockito.any())).thenReturn(Optional.of(new User()));
+        assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
+    }
+
+    @Test
+    void CustomUserDetailsService_getUserById_OK() {
+        when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(new User()));
+        assertThat(userDetailsService.getUserById(1L)).isNotNull();
+    }
+
+    @Test
+    void JwtService_GenerateAuthInfo_OK() {
+        User user = TestMockUtils.getStubUser();
+
+        Assertions.assertThat(jwtService.generateAuthInfo(user)).isNotNull();
+    }
+
 }

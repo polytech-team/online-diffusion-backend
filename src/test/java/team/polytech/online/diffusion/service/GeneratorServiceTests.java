@@ -41,7 +41,6 @@ public class GeneratorServiceTests {
     private RabbitTemplate rabbitTemplate;
     @MockBean
     private ImageApi imgurApi;
-
     @Autowired
     private GeneratorService generatorService;
     @Autowired
@@ -109,7 +108,13 @@ public class GeneratorServiceTests {
     }
 
     @Test
-    public void GeneratorService_generate_returnsStatus() {
+    public void GeneratorService_generate_userNotFound() {
+        TestMockUtils.mockAuthInfo(TestMockUtils.getStubUser());
+        Assertions.assertThat(generatorService.generate("lala", "nono", "anime-diffusion", 2356)).isNull();
+    }
+
+    @Test
+    public void GeneratorService_getGenerationStatus_returnsStatus() {
         Mockito.when(generationStatusRepository.findById(Mockito.any()))
                 .thenAnswer(var -> Optional.of(new GenerationStatus("lkdjsf", GenerationStatus.Stage.NOT_STARTED)));
 

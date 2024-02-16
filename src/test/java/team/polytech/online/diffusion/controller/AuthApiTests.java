@@ -1,10 +1,6 @@
 package team.polytech.online.diffusion.controller;
 
-import java.util.Collections;
-import java.util.Optional;
-
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.thymeleaf.TemplateEngine;
-
 import team.polytech.online.diffusion.api.AuthApiController;
 import team.polytech.online.diffusion.entity.RecoveryToken;
 import team.polytech.online.diffusion.model.AuthInfo;
@@ -23,6 +18,9 @@ import team.polytech.online.diffusion.service.auth.AuthService;
 import team.polytech.online.diffusion.service.auth.AuthServiceImpl;
 import team.polytech.online.diffusion.service.auth.response.RegistrationResponse;
 import team.polytech.online.diffusion.utils.TestMockUtils;
+
+import java.util.Collections;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthApiTests {
@@ -86,6 +84,14 @@ public class AuthApiTests {
             .thenReturn(AUTH_INFO);
 
         Assertions.assertThat(authApiController.refreshToken("refreshToken1").getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void AuthApiController_refreshToken_NOT_FOUND() {
+        Mockito.when(authService.refresh(Mockito.any()))
+                .thenReturn(null);
+
+        Assertions.assertThat(authApiController.refreshToken("refreshToken1").getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -177,5 +183,10 @@ public class AuthApiTests {
             .thenReturn(AuthServiceImpl.RecoveryResponse.INVALID_TOKEN);
 
         Assertions.assertThat(authApiController.newPassword(TEST_PASSWORD, TEST_RECOVERY_TOKEN).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void ImagesApiController_getRequest_OK() {
+        Assertions.assertThat(authApiController.getRequest()).isNotNull();
     }
 }

@@ -3,10 +3,6 @@ package team.polytech.online.diffusion.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,11 +16,7 @@ import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.model.Image;
 import team.polytech.online.diffusion.model.PostPagingWrapper;
 import team.polytech.online.diffusion.repository.ImageRepository;
-import team.polytech.online.diffusion.repository.UserRepository;
 import team.polytech.online.diffusion.service.image.ImageServiceImpl;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import team.polytech.online.diffusion.utils.TestMockUtils;
 
 import java.util.List;
@@ -33,9 +25,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,6 +55,17 @@ public class ImagesServiceTests {
         assertThat(result).isNotEmpty();
         assertThat(result.get().getPhotoId()).isEqualTo(1L);
     }
+
+    @Test
+    void imageService_getImageById_whenPrivateImageNotOwned() {
+        ImageEntity publicImage =  createMockImageEntity(1L, "userCustom", ImageEntity.Publicity.PRIVATE);
+        when(imageRepository.findById(1L)).thenReturn(Optional.of(publicImage));
+
+        Optional<Image> result = imageService.getImageById(1L);
+
+        assertThat(result).isEmpty();
+    }
+
     @Test
     void imageService_getImageById_whenImageNotFound_ShouldReturnEmpty() {
 
