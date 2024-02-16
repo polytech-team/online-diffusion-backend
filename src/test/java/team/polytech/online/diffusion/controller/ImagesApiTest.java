@@ -55,18 +55,18 @@ class ImagesApiTest {
     }
 
     @Test
+    void ImagesApiController_getImage_InvalidId() {
+        ResponseEntity<Image> response = controller.getImage(-1L);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
     void ImagesApiController_getImage_WhenNotFound() {
         Long photoId = 1L;
         when(imageService.getImageById(photoId)).thenReturn(Optional.empty());
 
         ResponseEntity<Image> response = controller.getImage(photoId);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }
-
-    @Test
-    void ImagesApiController_getImage_InvalidId() {
-        ResponseEntity<Image> response = controller.getImage(-1L);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
