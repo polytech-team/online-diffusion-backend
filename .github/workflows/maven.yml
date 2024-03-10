@@ -28,7 +28,9 @@ jobs:
           distribution: 'liberica'
           cache: 'maven'
       - name: Get secrets
-        run: echo {{ secrets.SECRET_PROPERTIES }} >> src/main/resources/application-secrets.yaml
+        env:
+            SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
+        run: echo $SECRET_PROPERTIES >> src/main/resources/application-secrets.yaml
       - name: Build source code
         run: mvn --batch-mode --update-snapshots compile
       - name: Build source code
