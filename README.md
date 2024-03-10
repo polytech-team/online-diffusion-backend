@@ -1,4 +1,4 @@
-# Online-diffusion backend server
+# Online-diffusion backend server ![example workflow](https://github.com/polytech-team/online-diffusion-backend/actions/workflows/maven.yml/badge.svg)
 
 Запуск сервера:
 1) Устанавливаем docker себе на компьютер

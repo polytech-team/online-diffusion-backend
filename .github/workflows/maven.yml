@@ -1,0 +1,89 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Fetch source code
+      - uses: actions/setup-java@v3
+        name: Setup Java
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: 'maven'
+      - name: Build source code
+        run: mvn --batch-mode --update-snapshots compile
+      - name: Save compiled artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: target
+          path: target
+
+  unit-tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+        name: Fetch source code
+      - uses: actions/setup-java@v3
+        name: Setup Java
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: 'maven'
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: target
+      - name: Get secrets
+        env:
+            SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
+        run: |
+          echo $SECRET_PROPERTIES | base64 -d > src/main/resources/application-secrets.yaml
+      - name: Run tests
+        run: mvn --batch-mode --update-snapshots test
+  packaging:
+    name: Package jar
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+        name: Fetch source code
+      - uses: actions/setup-java@v3
+        name: Setup Java
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: 'maven'
+      - name: Get secrets
+        env:
+            SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
+        run: |
+          echo $SECRET_PROPERTIES | base64 -d > src/main/resources/application-secrets.yaml
+      - name: Create Jar file
+        run: mvn --batch-mode --update-snapshots -DskipTests package
+      - name: Upload Jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: target-jar
+          path: target/online.diffusion-0.0.1.jar
+        
+  
