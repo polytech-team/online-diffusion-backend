@@ -44,4 +44,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: builded-code
+      - uses: actions/setup-java@v3
+        name: Setup Java
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: 'maven'
+      - name: Run unit tests
+        run: mvn --batch-mode --update-snapshots test
   
