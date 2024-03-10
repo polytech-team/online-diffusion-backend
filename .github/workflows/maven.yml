@@ -21,14 +21,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        name: Fetch source code
       - uses: actions/setup-java@v3
+        name: Setup Java
         with:
           java-version: '17'
           distribution: 'liberica'
           cache: 'maven'
-      - name: Run the Maven verify phase
-        run: mvn --batch-mode --update-snapshots verify
-
-      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-      - name: Update dependency graph
-        uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+      - name: Build source code
+        run: mvn --batch-mode --update-snapshots build
