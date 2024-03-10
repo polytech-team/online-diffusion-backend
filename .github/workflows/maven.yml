@@ -83,6 +83,7 @@ jobs:
       - name: Upload Jar
         uses: actions/upload-artifact@v4
         with:
-          name: target/online.diffusion-0.0.1.jar
+          name: target-jar
+          path: target/online.diffusion-0.0.1.jar
         
   
