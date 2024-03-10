@@ -39,6 +39,7 @@ jobs:
         with:
           name: target
           path: target
+
   unit-tests:
     name: Run unit tests
     runs-on: ubuntu-latest
@@ -46,12 +47,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         name: Fetch source code
+      - uses: actions/setup-java@v3
+        name: Setup Java
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: 'maven'
       - name: Download compiled artifacts
         uses: actions/download-artifact@v4
         with:
           name: target
       - name: Run tests
         run: mvn --batch-mode --update-snapshots test
+
   packaging:
     name: Package jar
     runs-on: ubuntu-latest
@@ -59,6 +67,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         name: Fetch source code
+      - uses: actions/setup-java@v3
+        name: Setup Java
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: 'maven'
       - name: Create Jar file
         run: mvn --batch-mode --update-snapshots -DskipTests package
       - name: Upload Jar
