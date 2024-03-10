@@ -34,14 +34,30 @@ jobs:
           echo $SECRET_PROPERTIES | base64 -d > src/main/resources/application-secrets.yaml
       - name: Build source code
         run: mvn --batch-mode --update-snapshots compile
-      - name: Build source code
-        run: mvn --batch-mode --update-snapshots test
-      - name: Package Jar file
-        run: mvn --batch-mode --update-snapshots -DskipTests package
       - name: Save compiled artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: target-jar
-          path: target/online.diffusion-0.0.1.jar
+          name: target
+          path: target
+  unit-tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: target
+      - name: Run tests
+        run: mvn --batch-mode --update-snapshots test
+  packaging:
+    name: Package jar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Jar file
+        run: mvn --batch-mode --update-snapshots -DskipTests package
+      - name: Upload Jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: target/online.diffusion-0.0.1.jar
         
   
