@@ -27,11 +27,6 @@ jobs:
           java-version: '17'
           distribution: 'liberica'
           cache: 'maven'
-      - name: Get secrets
-        env:
-            SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
-        run: |
-          echo $SECRET_PROPERTIES | base64 -d > src/main/resources/application-secrets.yaml
       - name: Build source code
         run: mvn --batch-mode --update-snapshots compile
       - name: Save compiled artifacts
@@ -57,6 +52,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: target
+      - name: Get secrets
+        env:
+            SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
+        run: |
+          echo $SECRET_PROPERTIES | base64 -d > src/main/resources/application-secrets.yaml
       - name: Run tests
         run: mvn --batch-mode --update-snapshots test
 
@@ -73,6 +73,11 @@ jobs:
           java-version: '17'
           distribution: 'liberica'
           cache: 'maven'
+      - name: Get secrets
+        env:
+            SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
+        run: |
+          echo $SECRET_PROPERTIES | base64 -d > src/main/resources/application-secrets.yaml
       - name: Create Jar file
         run: mvn --batch-mode --update-snapshots -DskipTests package
       - name: Upload Jar
