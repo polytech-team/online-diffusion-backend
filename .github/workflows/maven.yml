@@ -31,7 +31,7 @@ jobs:
         env:
             SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
         run: |
-          echo $SECRET_PROPERTIES >> src/main/resources/application-secrets.yaml && cat src/main/resources/application-secrets.yaml
+          echo $SECRET_PROPERTIES | base64 -d > src/main/resources/application-secrets.yaml
       - name: Build source code
         run: mvn --batch-mode --update-snapshots compile
       - name: Build source code
