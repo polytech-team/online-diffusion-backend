@@ -4,9 +4,11 @@ import org.mockito.Mockito;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import team.polytech.online.diffusion.entity.ImageEntity;
 import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.repository.UserRepository;
 
+import java.time.Instant;
 import java.util.Optional;
 
 public class TestMockUtils {
@@ -57,5 +59,20 @@ public class TestMockUtils {
         user.setGalleryImages(3L);
         user.setPosted(3L);
         return user;
+    }
+
+    public static ImageEntity getStubImageEntity() {
+        ImageEntity entity = new ImageEntity();
+
+        entity.setId(0L);
+        entity.setPublicity(ImageEntity.Publicity.PUBLIC);
+        entity.setUser(getStubUser());
+        entity.setAntiPrompt("foo");
+        entity.setPrompt("foo");
+        entity.setModel("foo");
+        entity.setSeed(1);
+        entity.setURL("localhost");
+        entity.setCreatedOn(Instant.now());
+        return entity;
     }
 }
