@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import team.polytech.automatic.webui.api.DefaultApi;
-import team.polytech.automatic.webui.invoker.ApiClient;
 import team.polytech.automatic.webui.model.SDModelItem;
 import team.polytech.automatic.webui.model.StableDiffusionProcessingTxt2Img;
 import team.polytech.online.diffusion.entity.GenerationStatus;
@@ -30,10 +29,10 @@ public class GeneratorServiceImpl implements GeneratorService {
 
 
     @Autowired
-    public GeneratorServiceImpl(ApiClient client, StableDiffusionRequestSender sender,
+    public GeneratorServiceImpl(DefaultApi automaticUiApi, StableDiffusionRequestSender sender,
                                 GenerationStatusRepository generationRepository,
                                 UserRepository userRepository) {
-        this.automaticUiApi = new DefaultApi(client);
+        this.automaticUiApi = automaticUiApi;
         this.sender = sender;
         this.generationRepository = generationRepository;
         this.userRepository = userRepository;

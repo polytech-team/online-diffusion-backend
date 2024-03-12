@@ -1,6 +1,7 @@
-package team.polytech.online.diffusion.service;
+package team.polytech.online.diffusion.unit.service;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
+@Tag("UnitTest")
 public class GeneratorServiceTests {
     @MockBean
     private GenerationStatusRepository generationStatusRepository;

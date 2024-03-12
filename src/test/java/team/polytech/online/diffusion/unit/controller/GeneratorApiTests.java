@@ -1,7 +1,8 @@
-package team.polytech.online.diffusion.controller;
+package team.polytech.online.diffusion.unit.controller;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
+@Tag("UnitTest")
 public class GeneratorApiTests {
 
     @Mock

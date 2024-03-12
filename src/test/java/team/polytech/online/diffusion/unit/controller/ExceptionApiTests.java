@@ -1,13 +1,15 @@
-package team.polytech.online.diffusion.controller;
+package team.polytech.online.diffusion.unit.controller;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import team.polytech.online.diffusion.api.ExceptionController;
 import java.util.HashSet;
 import java.util.Set;
 
+@Tag("UnitTest")
 public class ExceptionApiTests {
     private ExceptionController exceptionController = new ExceptionController();
 
