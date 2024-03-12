@@ -1,7 +1,8 @@
-package team.polytech.online.diffusion.service;
+package team.polytech.online.diffusion.unit.service;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
+@Tag("UnitTest")
 public class AuthServiceTests {
     @Autowired
     private AuthServiceImpl authService;

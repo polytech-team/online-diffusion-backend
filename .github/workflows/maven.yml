@@ -58,7 +58,31 @@ jobs:
         run: |
           echo $SECRET_PROPERTIES | base64 -d > src/main/resources/application-secrets.yaml
       - name: Run tests
-        run: mvn --batch-mode --update-snapshots test
+        run: mvn --batch-mode --update-snapshots test -Dgroups=UnitTest
+  integration-tests:
+    name: Run integration tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+        name: Fetch source code
+      - uses: actions/setup-java@v3
+        name: Setup Java
+        with:
+          java-version: '17'
+          distribution: 'liberica'
+          cache: 'maven'
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: target
+      - name: Get secrets
+        env:
+          SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
+        run: |
+          echo $SECRET_PROPERTIES | base64 -d > src/main/resources/application-secrets.yaml
+      - name: Run tests
+        run: mvn --batch-mode --update-snapshots test -Dgroups=IntegrationTest
   packaging:
     name: Package jar
     runs-on: ubuntu-latest
