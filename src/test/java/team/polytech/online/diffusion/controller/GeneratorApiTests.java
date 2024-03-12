@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -46,18 +48,20 @@ public class GeneratorApiTests {
                 .getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
-    @Test
-    public void GeneratorApiController_postGenerator_OK() {
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 1000, Integer.MAX_VALUE})
+    public void GeneratorApiController_postGenerator_OK(int seed) {
         Mockito.when(generatorService.generate(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt()))
                 .thenReturn(new GenerationStatus("sddsf", GenerationStatus.Stage.IN_PROGRESS));
 
-        Assertions.assertThat(generatorApiController.postGenerator("foo", "boo", "too", Optional.of(1234))
+        Assertions.assertThat(generatorApiController.postGenerator("foo", "boo", "too", Optional.of(seed))
                 .getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
     }
 
-    @Test
-    public void GeneratorApiController_postGenerator_NegativeSeed() {
-        Assertions.assertThat(generatorApiController.postGenerator("foo", "boo", "too", Optional.of(-1234))
+    @ParameterizedTest
+    @ValueSource(ints = {-1, -1000, Integer.MIN_VALUE})
+    public void GeneratorApiController_postGenerator_NegativeSeed(int seed) {
+        Assertions.assertThat(generatorApiController.postGenerator("foo", "boo", "too", Optional.of(seed))
                 .getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 

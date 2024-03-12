@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -44,6 +46,12 @@ public class AuthApiTests {
     @BeforeEach
     public void mockAuthInfo() {
         TestMockUtils.mockAuthInfo();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1234", "foo", "test@foo"})
+    public void AuthApiController_login_invalid_email(String email) {
+        Assertions.assertThat(authApiController.login(email, "test").getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
