@@ -112,9 +112,8 @@ public class ImagesIntegrationTest {
             return Optional.of(entity);
         });
 
-
-        ResponseEntity<Void> response = imagesApiController.putImage(1L);
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(imagesApiController.putImage(1L).
+                getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
