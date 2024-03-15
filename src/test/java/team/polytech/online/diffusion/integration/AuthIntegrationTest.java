@@ -1,8 +1,5 @@
 package team.polytech.online.diffusion.integration;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -16,7 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-
 import team.polytech.online.diffusion.api.AuthApi;
 import team.polytech.online.diffusion.entity.User;
 import team.polytech.online.diffusion.model.AuthInfo;
@@ -25,6 +21,9 @@ import team.polytech.online.diffusion.repository.AuthTokenRepository;
 import team.polytech.online.diffusion.repository.RegistrationTokenRepository;
 import team.polytech.online.diffusion.repository.UserRepository;
 import team.polytech.online.diffusion.utils.TestMockUtils;
+
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,6 +44,7 @@ public class AuthIntegrationTest {
 
     @Autowired
     private AuthApi authApiController;
+    
 
     @BeforeEach
     public void mockAuthInfo() {
